@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import authRoutes from './routes/authRoutes.js';   // ✅ Corrected path
-import userRoutes from './routes/userRoutes.js';   // ✅ Corrected path
+import authRoutes from './routes/authRoutes.js';   
+import userRoutes from './routes/userRoutes.js'; 
 import feedbackRoutes from './routes/feedbackRoutes.js';
 dotenv.config();
 

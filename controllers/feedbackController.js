@@ -12,11 +12,11 @@ export const getFeedback = async (req, res) => {
 
 // Add new feedback
 export const addFeedback = async (req, res) => {
-  const { email, phone_no, description } = req.body;
+  const { email, phone, description } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO feedback (email, phone_no, description) VALUES ($1, $2, $3) RETURNING *",
-      [email, phone_no, description]
+      "INSERT INTO feedback (email, phone, description) VALUES ($1, $2, $3) RETURNING *",
+      [email, phone, description]
     );
     res.json(result.rows[0]);
   } catch (err) {
