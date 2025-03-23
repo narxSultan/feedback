@@ -42,14 +42,35 @@ export const login = async (req, res) => {
     if (user.rows.length === 0) return res.status(401).json({ error: "Invalid email or password" });
 
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
-    if (!validPassword) return res.status(401).json({ error: "Invalid email or password" });
+    if (!validPassword) {return res.status(401).json({ error: "Invalid email or password" });
+  }
 
-    const token = jwt.sign({ id: user.rows[0].id, role: user.rows[0].role }, secretKey, { expiresIn: "1h" });
 
-    res.json({
-      token,
-      user: { id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email, role: user.rows[0].role },
-    });
+  const token = jwt.sign(
+    { role: user.rows[0].role },
+    secretKey, 
+    { expiresIn: "1h" }
+  );
+  
+  res.json({
+    token,
+    user: { 
+      name: user.rows[0].name, 
+      email: user.rows[0].email, 
+      role: user.rows[0].role 
+    }
+  });
+
+  res.json({
+    token: token, // Send the token
+    user: {
+      name: user.rows[0].name, 
+      email: user.rows[0].email, 
+      role: user.rows[0].role
+    }
+  });
+  
+  
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
