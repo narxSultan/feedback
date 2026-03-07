@@ -1,0 +1,23 @@
+<div class="flex min-h-screen items-center justify-center px-4">
+  <div class="w-full max-w-md rounded-3xl border border-primary-100 bg-white p-8 shadow-soft">
+    <div class="flex items-center justify-between gap-3">
+      <h1 class="text-3xl font-semibold text-green-900">User Login</h1>
+      <a routerLink="/" class="inline-flex items-center gap-1 rounded-lg border border-green-200 px-3 py-1.5 text-sm font-medium text-green-800 hover:bg-green-50">
+        <span aria-hidden="true">←</span>
+      </a>
+    </div>
+    <p class="mt-2 text-green-700">Access your event workspace.</p>
+
+    <form class="mt-6 space-y-3" (ngSubmit)="submit()">
+      <input type="email" [(ngModel)]="email" name="email" required placeholder="Email" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      <input type="password" [(ngModel)]="password" name="password" required placeholder="Password" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      
+      <button type="submit" class="w-full rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17l5-5-5-5"/><path stroke-linecap="round" d="M20 12H9"/><path stroke-linecap="round" d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/></svg>Login</span></button>
+      <p *ngIf="message" class="text-sm text-red-600">{{ message }}</p>
+    </form>
+    <div class="mt-4 flex items-center justify-between">
+      <a routerLink="/user-register" class="text-sm text-green-700 hover:underline">Create new account</a>
+      <a routerLink="/forgot-password" class="text-sm text-green-700 hover:underline">Forgot password?</a>
+    </div>
+  </div>
+</div>

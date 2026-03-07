@@ -1,0 +1,207 @@
+<div class="min-h-screen px-4 py-10 sm:px-8">
+  <div *ngIf="showToastOverlay" class="fixed right-4 top-4 z-50">
+    <div
+      class="rounded-xl px-4 py-3 text-sm font-semibold shadow-lg"
+      [class.bg-green-600]="toastType === 'success'"
+      [class.text-white]="true"
+      [class.bg-red-600]="toastType === 'error'"
+    >
+      {{ toastMessage }}
+    </div>
+  </div>
+
+  <div class="mx-auto grid max-w-6xl gap-6" [class.lg:grid-cols-[1fr_1.1fr]]="showCreateForm">
+    <section *ngIf="showCreateForm" class="rounded-3xl border border-primary-100 bg-white p-6 shadow-soft">
+      <h1 class="text-2xl font-semibold text-green-900">Create Event</h1>
+      <p class="mt-2 text-green-700">A unique code is generated automatically.</p>
+
+      <form class="mt-5 space-y-3" (ngSubmit)="createEvent()">
+        <input
+          type="text"
+          [(ngModel)]="form.title"
+          name="title"
+          placeholder="Event title"
+          required
+          class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+        />
+
+        <textarea
+          [(ngModel)]="form.description"
+          name="description"
+          rows="3"
+          placeholder="Description"
+          class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+        ></textarea>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <input
+            type="date"
+            [(ngModel)]="form.eventDate"
+            name="eventDate"
+            class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+          />
+          <input
+            type="date"
+            [(ngModel)]="form.endDate"
+            name="endDate"
+            class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+          />
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <input
+            type="text"
+            [(ngModel)]="form.location"
+            name="location"
+            placeholder="Location"
+            class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+          />
+        </div>
+
+        <input
+          type="file"
+          name="eventImage"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+          class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+        />
+        <p class="text-xs text-green-700">
+          Upload event image (JPG, PNG, WEBP). Max 1.5MB. Required size: 1200 x 800 px.
+        </p>
+
+        <div class="rounded-2xl border border-green-100 bg-green-50/40 p-4">
+          <label class="inline-flex items-center gap-2 text-sm font-medium text-green-900">
+            <input type="checkbox" [(ngModel)]="useCustomForm" name="useCustomForm" />
+            <span>Use custom feedback form for this event</span>
+          </label>
+
+          <div *ngIf="useCustomForm" class="mt-3 grid gap-3">
+            <input
+              type="text"
+              [(ngModel)]="questionForm.label"
+              name="questionLabel"
+              placeholder="Question label"
+              class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+            />
+            <div class="grid gap-3 sm:grid-cols-3">
+              <select [(ngModel)]="questionForm.type" name="questionType" class="rounded-xl border border-green-200 px-4 py-3">
+                <option value="text">Text answer</option>
+                <option value="radio">Single choice (radio)</option>
+                <option value="checkbox">Multi choice (checkbox)</option>
+              </select>
+              <label class="inline-flex items-center gap-2 rounded-xl border border-green-200 px-4 py-3 text-sm text-green-800">
+                <input type="checkbox" [(ngModel)]="questionForm.required" name="questionRequired" />
+                Required
+              </label>
+              <button type="button" (click)="addCustomQuestion()" class="rounded-xl border border-green-300 px-4 py-3 text-sm font-semibold text-green-900 hover:bg-green-100"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Add Question</span></button>
+            </div>
+            <input
+              *ngIf="questionForm.type === 'radio' || questionForm.type === 'checkbox'"
+              type="text"
+              [(ngModel)]="questionForm.optionsText"
+              name="questionOptions"
+              placeholder="Options separated by comma, e.g. Excellent, Good, Fair"
+              class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
+            />
+            <div class="space-y-2">
+              <article *ngFor="let question of customQuestions; let i = index" class="flex items-start justify-between gap-3 rounded-xl border border-green-100 bg-white p-3">
+                <div>
+                  <p class="text-sm font-semibold text-green-900">{{ i + 1 }}. {{ question.label }}</p>
+                  <p class="text-xs text-green-700">{{ question.type }} <span *ngIf="question.required">• required</span></p>
+                  <p *ngIf="question.options?.length" class="mt-1 text-xs text-green-700">{{ question.options?.join(', ') }}</p>
+                </div>
+                <button type="button" (click)="removeCustomQuestion(i)" class="rounded-lg border border-red-300 px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Remove</span></button>
+              </article>
+              <p *ngIf="!customQuestions.length" class="text-xs text-green-700">No custom questions added yet. If none are added, default feedback form will be used.</p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 transition hover:bg-primary-400"
+        >
+          <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Create Event</span>
+        </button>
+      </form>
+
+      <p *ngIf="message" class="mt-4 text-sm text-green-700">{{ message }}</p>
+      <p *ngIf="generatedCode" class="mt-2 rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-semibold text-green-900">
+        Generated Event Code: {{ generatedCode }}
+      </p>
+      <button
+        *ngIf="generatedCode"
+        type="button"
+        (click)="downloadGeneratedEventPdf()"
+        class="mt-3 rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-green-900"
+      >
+        <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Download PDF (Code + QR)</span>
+      </button>
+    </section>
+
+    <section class="rounded-3xl border border-primary-100 bg-white p-6 shadow-soft">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-green-900">Events</h2>
+        <a routerLink="/dashboard" class="text-sm text-green-700 hover:underline">Back to Dashboard</a>
+      </div>
+
+      <div class="space-y-3">
+        <article *ngFor="let event of events" class="rounded-2xl border border-green-100 p-4">
+          <img
+            [src]="event.image_url || 'assets/logo.png'"
+            [alt]="event.title"
+            class="mb-3 h-36 w-full rounded-xl object-cover"
+          />
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h3 class="font-semibold text-green-900">{{ event.title }}</h3>
+              <p class="text-sm text-green-700">{{ event.description || 'No description' }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <p class="rounded-full bg-primary-100 px-3 py-1 text-sm font-semibold text-green-700">{{ event.event_code }}</p>
+              <span *ngIf="isExpired(event)" class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">Expired</span>
+            </div>
+          </div>
+          <p class="mt-2 text-sm text-green-700">{{ event.event_date || 'No date' }} • {{ event.location || 'No location' }}</p>
+          <p class="mt-1 text-xs text-green-700">End date: {{ event.end_date || 'No expiry' }}</p>
+          <p class="mt-1 text-sm font-medium text-green-800">Feedbacks: {{ event.feedback_count || 0 }}</p>
+
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <a [routerLink]="['/event-feedback', event.id]" class="text-sm font-medium text-green-800 hover:underline">View Feedback</a>
+            <button type="button" (click)="downloadEventPdf(event)" class="rounded-lg border border-green-300 px-3 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-50">
+              <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Download QR PDF</span>
+            </button>
+            <button type="button" (click)="removeImage(event)" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+              <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Remove Image</span>
+            </button>
+            <button type="button" (click)="startEdit(event)" class="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-50">
+              <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>Edit Event</span>
+            </button>
+            <button type="button" (click)="deleteEvent(event)" class="rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50">
+              <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 7h16M10 11v6M14 11v6"/></svg>Delete Event</span>
+            </button>
+          </div>
+
+          <form *ngIf="editingEventId === event.id" class="mt-3 grid gap-2 rounded-xl border border-green-100 bg-green-50/40 p-3" (ngSubmit)="saveEdit(event.id)">
+            <input type="text" [(ngModel)]="editForm.title" name="editTitle{{ event.id }}" required placeholder="Event title" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+            <textarea [(ngModel)]="editForm.description" name="editDescription{{ event.id }}" rows="2" placeholder="Description" class="rounded-lg border border-green-200 px-3 py-2 text-sm"></textarea>
+            <div class="grid gap-2 sm:grid-cols-2">
+              <input type="date" [(ngModel)]="editForm.eventDate" name="editDate{{ event.id }}" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+              <input type="date" [(ngModel)]="editForm.endDate" name="editEndDate{{ event.id }}" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+            </div>
+            <div class="grid gap-2 sm:grid-cols-2">
+              <input type="text" [(ngModel)]="editForm.location" name="editLocation{{ event.id }}" placeholder="Location" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+            </div>
+            <input type="file" accept="image/*" name="editImageFile{{ event.id }}" (change)="onEditImageSelected($event)" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+            <p class="text-xs text-green-700">Upload new image if you want to replace the current one.</p>
+            <div class="flex gap-2">
+              <button type="submit" class="rounded-lg bg-primary-300 px-3 py-1.5 text-xs font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M5 4h12l2 2v14H5z"/></svg>Save</span></button>
+              <button type="button" (click)="cancelEdit()" class="rounded-lg border border-green-300 px-3 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Cancel</span></button>
+            </div>
+          </form>
+        </article>
+
+        <p *ngIf="!events.length" class="text-sm text-green-700">No events yet.</p>
+      </div>
+    </section>
+  </div>
+</div>

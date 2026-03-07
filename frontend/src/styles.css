@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --page-bg: #ffffff;
+  --primary: #86efac;
+  --primary-strong: #22c55e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  background:
+    radial-gradient(circle at 10% 0%, #dcfce7 0%, rgba(220, 252, 231, 0) 35%),
+    radial-gradient(circle at 90% 100%, #ecfccb 0%, rgba(236, 252, 203, 0) 45%),
+    var(--page-bg);
+  color: #14532d;
+  min-height: 100vh;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}

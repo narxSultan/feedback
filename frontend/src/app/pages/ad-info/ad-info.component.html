@@ -1,0 +1,27 @@
+<div class="min-h-screen px-4 py-10 sm:px-8">
+  <div class="mx-auto w-full max-w-4xl rounded-3xl border border-primary-100 bg-white p-5 shadow-soft sm:p-8">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <h1 class="text-2xl font-semibold text-green-900">Ad Details</h1>
+      <a routerLink="/" class="rounded-lg border border-green-300 px-3 py-2 text-xs font-semibold text-green-800 hover:bg-green-50">
+        Back to Landing
+      </a>
+    </div>
+
+    <p *ngIf="message" class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{{ message }}</p>
+
+    <article *ngIf="ad" class="space-y-4">
+      <img [src]="ad.image_url || 'assets/logo1.png'" [alt]="ad.title || 'Ad image'" class="h-[320px] w-full rounded-2xl border border-green-100 object-cover" />
+      <h2 class="text-xl font-semibold text-green-900">{{ ad.title || 'Advertisement' }}</h2>
+      <p class="whitespace-pre-line text-sm leading-7 text-green-800">{{ ad.description || 'No description provided.' }}</p>
+      <a
+        *ngIf="ad.target_url"
+        [href]="ad.target_url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex rounded-xl bg-primary-300 px-4 py-2 text-sm font-semibold text-green-900 hover:bg-primary-400"
+      >
+        Open Link
+      </a>
+    </article>
+  </div>
+</div>

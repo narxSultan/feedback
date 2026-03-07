@@ -1,0 +1,441 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { AdminService } from '../../core/services/admin.service';
+import { EventsService } from '../../core/services/events.service';
+import { EventItem } from '../../core/models/types';
+
+@Component({
+  selector: 'app-dashboard-page',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './dashboard.component.html'
+})
+export class DashboardPageComponent {
+  activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' = 'overview';
+  isSwahili = false;
+  searchTerm = '';
+  feedbacks: any[] = [];
+  ads: any[] = [];
+  events: EventItem[] = [];
+  message = '';
+  passwordMessage = '';
+  selectedProfileImageFile: File | null = null;
+  selectedAdImageFile: File | null = null;
+  selectedEditAdImageFile: File | null = null;
+  editingAdId: number | null = null;
+  profile = {
+    name: '',
+    email: '',
+    profile_image_url: ''
+  };
+  profileForm = {
+    name: '',
+    profileImageUrl: ''
+  };
+  adForm = {
+    title: '',
+    description: '',
+    targetUrl: '',
+    endDate: ''
+  };
+  editAdForm = {
+    title: '',
+    description: '',
+    targetUrl: '',
+    endDate: '',
+    isActive: true
+  };
+  passwordForm = {
+    newPassword: '',
+    confirmNewPassword: ''
+  };
+
+  constructor(
+    private authService: AuthService,
+    private adminService: AdminService,
+    private eventsService: EventsService,
+    private router: Router
+  ) {
+    this.loadFeedbacks();
+    this.loadProfile();
+    this.loadEvents();
+    this.loadAds();
+  }
+
+  get adminName() {
+    return this.authService.getAdminName();
+  }
+
+  get adminAvatar() {
+    return this.profile.profile_image_url || this.authService.getAdminProfileImage() || 'assets/logo.png';
+  }
+
+  toggleLanguage() {
+    this.isSwahili = !this.isSwahili;
+  }
+
+  setActiveSection(section: 'overview' | 'feedback' | 'ads' | 'security' | 'actions') {
+    this.activeSection = section;
+    if (section === 'ads') {
+      this.loadAds();
+    }
+  }
+
+  loadFeedbacks() {
+    this.adminService.getPublicFeedback(this.searchTerm).subscribe({
+      next: (feedbacks) => {
+        this.feedbacks = feedbacks;
+      },
+      error: (error) => {
+        this.message = error?.error?.message || 'Failed to load public feedback.';
+      }
+    });
+  }
+
+  loadProfile() {
+    this.adminService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.profile = {
+          name: profile.name || '',
+          email: profile.email || '',
+          profile_image_url: profile.profile_image_url || ''
+        };
+        this.profileForm = {
+          name: profile.name || '',
+          profileImageUrl: profile.profile_image_url || ''
+        };
+        localStorage.setItem('admin_name', this.profile.name || 'Admin');
+        localStorage.setItem('admin_profile_image', this.profile.profile_image_url || '');
+      },
+      error: (error) => {
+        this.message = error?.error?.message || 'Failed to load admin profile.';
+      }
+    });
+  }
+
+  loadAds() {
+    this.adminService.getAds().subscribe({
+      next: (ads) => {
+        this.ads = ads;
+      },
+      error: (error) => {
+        this.message = error?.error?.message || 'Failed to load ads.';
+      }
+    });
+  }
+
+  loadEvents() {
+    this.eventsService.getEvents().subscribe({
+      next: (events) => {
+        this.events = events;
+      },
+      error: () => {
+        this.events = [];
+      }
+    });
+  }
+
+  onAdImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length ? input.files[0] : null;
+    this.selectedAdImageFile = file;
+  }
+
+  createAd() {
+    if (!this.selectedAdImageFile) {
+      this.message = this.isSwahili ? 'Chagua picha ya tangazo' : 'Select ad image first';
+      return;
+    }
+
+    this.adminService.uploadAdImage(this.selectedAdImageFile).subscribe({
+      next: ({ imageUrl }) => {
+        this.adminService.createAd({
+          title: this.adForm.title || undefined,
+          description: this.adForm.description || undefined,
+          targetUrl: this.adForm.targetUrl || undefined,
+          endDate: this.adForm.endDate || undefined,
+          imageUrl,
+          isActive: true
+        }).subscribe({
+          next: (ad) => {
+            this.ads = [ad, ...this.ads];
+            this.adForm = { title: '', description: '', targetUrl: '', endDate: '' };
+            this.selectedAdImageFile = null;
+            this.message = this.isSwahili ? 'Tangazo limeongezwa' : 'Ad created successfully';
+          },
+          error: (error) => {
+            this.message = error?.error?.message || 'Failed to create ad.';
+          }
+        });
+      },
+      error: (error) => {
+        this.message = error?.error?.message || 'Failed to upload ad image.';
+      }
+    });
+  }
+
+  startEditAd(ad: any) {
+    this.editingAdId = ad.id;
+    this.editAdForm = {
+      title: ad.title || '',
+      description: ad.description || '',
+      targetUrl: ad.target_url || '',
+      endDate: ad.end_date ? String(ad.end_date).slice(0, 10) : '',
+      isActive: ad.is_active !== false
+    };
+    this.selectedEditAdImageFile = null;
+  }
+
+  cancelEditAd() {
+    this.editingAdId = null;
+    this.selectedEditAdImageFile = null;
+    this.editAdForm = { title: '', description: '', targetUrl: '', endDate: '', isActive: true };
+  }
+
+  onEditAdImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length ? input.files[0] : null;
+    this.selectedEditAdImageFile = file;
+  }
+
+  saveAdEdit(adId: number) {
+    const submitUpdate = (imageUrl?: string) => {
+      this.adminService.updateAd(adId, {
+        title: this.editAdForm.title || undefined,
+        description: this.editAdForm.description || undefined,
+        targetUrl: this.editAdForm.targetUrl || undefined,
+        endDate: this.editAdForm.endDate || undefined,
+        imageUrl,
+        isActive: this.editAdForm.isActive
+      }).subscribe({
+        next: (updated) => {
+          this.ads = this.ads.map((item) => (item.id === adId ? updated : item));
+          this.message = this.isSwahili ? 'Tangazo limesasishwa' : 'Ad updated successfully';
+          this.cancelEditAd();
+        },
+        error: (error) => {
+          this.message = error?.error?.message || 'Failed to update ad.';
+        }
+      });
+    };
+
+    if (this.selectedEditAdImageFile) {
+      this.adminService.uploadAdImage(this.selectedEditAdImageFile).subscribe({
+        next: ({ imageUrl }) => submitUpdate(imageUrl),
+        error: (error) => {
+          this.message = error?.error?.message || 'Failed to upload ad image.';
+        }
+      });
+      return;
+    }
+
+    submitUpdate();
+  }
+
+  deleteAd(adId: number) {
+    const confirmed = window.confirm('Delete this ad image?');
+    if (!confirmed) {
+      return;
+    }
+
+    this.adminService.deleteAd(adId).subscribe({
+      next: () => {
+        this.ads = this.ads.filter((ad) => ad.id !== adId);
+        this.message = this.isSwahili ? 'Tangazo limefutwa' : 'Ad deleted successfully';
+      },
+      error: (error) => {
+        this.message = error?.error?.message || 'Failed to delete ad.';
+      }
+    });
+  }
+
+  exportPublicFeedbackCsv() {
+    if (!this.feedbacks.length) {
+      this.message = this.isSwahili ? 'Hakuna feedback ya kuexport' : 'No feedback available to export';
+      return;
+    }
+
+    const customKeys = new Set<string>();
+    this.feedbacks.forEach((item) => {
+      const answers = item?.custom_answers && typeof item.custom_answers === 'object'
+        ? Object.keys(item.custom_answers)
+        : [];
+      answers.forEach((key) => customKeys.add(key));
+    });
+
+    const baseHeaders = ['Event', 'Event Code', 'Rating', 'Satisfaction', 'Comment', 'Name', 'Email', 'Date'];
+    const headers = [...baseHeaders, ...Array.from(customKeys)];
+
+    const rows = this.feedbacks.map((item) => {
+      const row: string[] = [
+        String(item.event_title ?? ''),
+        String(item.event_code ?? ''),
+        String(item.rating ?? ''),
+        String(item.satisfaction ?? ''),
+        String(item.comment ?? ''),
+        String(item.name ?? ''),
+        String(item.email ?? ''),
+        String(item.created_at ?? ''),
+      ];
+
+      const answers = item?.custom_answers && typeof item.custom_answers === 'object'
+        ? item.custom_answers
+        : {};
+
+      Array.from(customKeys).forEach((key) => {
+        const value = answers[key];
+        if (Array.isArray(value)) {
+          row.push(value.join(', '));
+        } else {
+          row.push(String(value ?? ''));
+        }
+      });
+
+      return row;
+    });
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `public-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigateByUrl('/');
+  }
+
+  updateProfile() {
+    this.adminService.updateMyProfile(this.profileForm).subscribe({
+      next: (profile) => {
+        this.profile = {
+          name: profile.name || '',
+          email: profile.email || '',
+          profile_image_url: profile.profile_image_url || ''
+        };
+        localStorage.setItem('admin_name', this.profile.name || 'Admin');
+        localStorage.setItem('admin_profile_image', this.profile.profile_image_url || '');
+        this.message = this.isSwahili ? 'Profile imesasishwa' : 'Profile updated';
+      },
+      error: (error) => {
+        this.message = error?.error?.message || (this.isSwahili ? 'Imeshindikana kusasisha profile' : 'Failed to update profile');
+      }
+    });
+  }
+
+  onProfileImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length ? input.files[0] : null;
+    this.selectedProfileImageFile = file;
+  }
+
+  uploadProfileImage() {
+    if (!this.selectedProfileImageFile) {
+      this.message = this.isSwahili ? 'Chagua picha kwanza' : 'Select image first';
+      return;
+    }
+
+    this.adminService.uploadProfileImage(this.selectedProfileImageFile).subscribe({
+      next: (profile) => {
+        this.profile.profile_image_url = profile.profile_image_url || '';
+        this.profileForm.profileImageUrl = profile.profile_image_url || '';
+        localStorage.setItem('admin_profile_image', this.profile.profile_image_url || '');
+        this.message = this.isSwahili ? 'Picha ya profile imewekwa' : 'Profile image uploaded';
+        this.selectedProfileImageFile = null;
+      },
+      error: (error) => {
+        this.message = error?.error?.message || (this.isSwahili ? 'Imeshindikana kupakia picha' : 'Failed to upload profile image');
+      }
+    });
+  }
+
+  changePassword() {
+    this.passwordMessage = '';
+
+    if (!this.passwordForm.newPassword || !this.passwordForm.confirmNewPassword) {
+      this.passwordMessage = this.isSwahili ? 'Jaza taarifa zote za password' : 'Fill all password fields';
+      return;
+    }
+
+    if (this.passwordForm.newPassword.length < 6) {
+      this.passwordMessage = this.isSwahili ? 'Password iwe angalau herufi 6' : 'Password must be at least 6 characters';
+      return;
+    }
+
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmNewPassword) {
+      this.passwordMessage = this.isSwahili ? 'Password hazifanani' : 'Passwords do not match';
+      return;
+    }
+
+    this.adminService.changeMyPassword(this.passwordForm.newPassword).subscribe({
+      next: (response) => {
+        this.passwordForm = { newPassword: '', confirmNewPassword: '' };
+        this.passwordMessage = response.message;
+      },
+      error: (error) => {
+        this.passwordMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kubadili password' : 'Failed to update password');
+      }
+    });
+  }
+
+  formatAnswer(value: unknown): string {
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return String(value ?? '');
+  }
+
+  isAdExpired(ad: any): boolean {
+    if (ad?.is_expired !== undefined) {
+      return Boolean(ad.is_expired);
+    }
+    if (!ad?.end_date) {
+      return false;
+    }
+    return new Date(ad.end_date).getTime() < new Date(new Date().toDateString()).getTime();
+  }
+
+  isEventExpired(event: EventItem): boolean {
+    if (event.is_expired !== undefined) {
+      return Boolean(event.is_expired);
+    }
+    if (!event.end_date) {
+      return false;
+    }
+    return new Date(event.end_date).getTime() < new Date(new Date().toDateString()).getTime();
+  }
+
+  get activeEventsCount(): number {
+    return this.events.filter((event) => !this.isEventExpired(event)).length;
+  }
+
+  get activeAdsCount(): number {
+    return this.ads.filter((ad) => ad?.is_active !== false && !this.isAdExpired(ad)).length;
+  }
+
+  get hasActiveOverviewData(): boolean {
+    return this.activeEventsCount > 0 || this.activeAdsCount > 0;
+  }
+
+  get chartMaxValue(): number {
+    return Math.max(1, this.activeEventsCount, this.activeAdsCount);
+  }
+
+  get eventsChartHeight(): string {
+    return `${Math.max(18, (this.activeEventsCount / this.chartMaxValue) * 100)}%`;
+  }
+
+  get adsChartHeight(): string {
+    return `${Math.max(18, (this.activeAdsCount / this.chartMaxValue) * 100)}%`;
+  }
+}

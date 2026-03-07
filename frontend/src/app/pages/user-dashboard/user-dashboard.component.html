@@ -1,0 +1,423 @@
+<div class="min-h-screen bg-gradient-to-b from-green-50/50 to-white px-4 py-8 sm:px-6 lg:px-8">
+  <div *ngIf="showToastOverlay" class="fixed right-4 top-4 z-50">
+    <div
+      class="rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg"
+      [class.bg-green-600]="toastType === 'success'"
+      [class.bg-red-600]="toastType === 'error'"
+    >
+      {{ toastMessage }}
+    </div>
+  </div>
+
+  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
+    <aside class="h-fit rounded-3xl border border-green-100 bg-white p-5 shadow-soft lg:sticky lg:top-6">
+      <div class="mb-6 flex items-center gap-3 rounded-2xl bg-green-50 p-3">
+        <img
+          [src]="profile?.profile_image_url || 'assets/logo.png'"
+          alt="Profile"
+          class="h-12 w-12 rounded-full object-cover ring-2 ring-green-200"
+        />
+        <div>
+          <p class="text-xs text-green-700">Account</p>
+          <p class="text-sm font-semibold text-green-900">{{ userName }}</p>
+          <p class="text-xs text-green-700 uppercase">{{ profile?.role || userRole }}</p>
+        </div>
+      </div>
+
+      <nav class="space-y-1.5 text-sm">
+        <button type="button" (click)="setActiveSection('overview')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'overview'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-10.5Z"/></svg><span>Overview</span>
+        </button>
+        <button type="button" (click)="setActiveSection('create-event')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'create-event'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M8 2v4M16 2v4M3 10h18"/></svg><span>Create Event</span>
+        </button>
+        <button type="button" (click)="setActiveSection('events-feedback')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'events-feedback'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg><span>Events & Feedback</span>
+        </button>
+        <button type="button" (click)="setActiveSection('feedback-history')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'feedback-history'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/></svg><span>Feedback History</span>
+        </button>
+        <button type="button" (click)="setActiveSection('payments')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'payments'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg><span>Payments</span>
+        </button>
+        <button type="button" (click)="setActiveSection('payments-history')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'payments-history'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h9l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path stroke-linecap="round" d="M16 3v4h4M9 12h6M9 16h6"/></svg><span>Payment History</span>
+        </button>
+        <button type="button" (click)="setActiveSection('profile')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'profile'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path stroke-linecap="round" d="M4 20a8 8 0 0 1 16 0"/></svg><span>Profile</span>
+        </button>
+        <button type="button" (click)="setActiveSection('security')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'security'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg><span>Security</span>
+        </button>
+      </nav>
+
+      <div class="mt-6 space-y-2 border-t border-green-100 pt-4">
+        <a *ngIf="isAdminRole" routerLink="/admin-users" class="block rounded-xl border border-green-200 px-4 py-2 text-center text-sm font-medium text-green-800 transition hover:bg-green-50">User Manage</a>
+        <button (click)="logout()" class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm font-medium text-green-800 transition hover:bg-green-50">
+          <span class="inline-flex items-center gap-2">
+            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17l5-5-5-5"/><path stroke-linecap="round" d="M20 12H9"/><path stroke-linecap="round" d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/></svg>
+            Logout
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="space-y-6">
+      <section class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p class="text-sm text-green-700">Welcome back</p>
+            <h1 class="text-3xl font-semibold text-green-900">{{ userName }} Dashboard</h1>
+            <p class="text-sm text-green-700">Manage events, track feedback, and handle payments.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
+            <div class="rounded-xl bg-green-50 px-4 py-2 text-center">
+              <p class="text-xs text-green-700">Events</p>
+              <p class="text-lg font-semibold text-green-900">{{ events.length }}</p>
+            </div>
+            <div class="rounded-xl bg-green-50 px-4 py-2 text-center">
+              <p class="text-xs text-green-700">Feedback</p>
+              <p class="text-lg font-semibold text-green-900">{{ feedbackHistory.length }}</p>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="message" class="mt-4 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">{{ message }}</p>
+      </section>
+
+      <section *ngIf="activeSection === 'overview'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Overview</h2>
+        <p class="mt-2 text-sm text-green-700">Use the sidebar to manage events, payments, profile, and security settings.</p>
+
+        <div *ngIf="hasActiveOverviewData; else noActiveOverviewUser" class="mt-5 grid gap-4 lg:grid-cols-2">
+          <article class="rounded-2xl border border-green-100 bg-green-50/40 p-4">
+            <p class="text-sm font-semibold text-green-900">Events Summary</p>
+            <div class="mt-3 grid grid-cols-2 gap-3">
+              <div class="rounded-xl bg-white px-4 py-3 text-center">
+                <p class="text-xs text-green-700">Active Events</p>
+                <p class="text-2xl font-bold text-green-900">{{ activeEventsCount }}</p>
+              </div>
+              <div class="rounded-xl bg-white px-4 py-3 text-center">
+                <p class="text-xs text-green-700">Total Events</p>
+                <p class="text-2xl font-bold text-green-900">{{ events.length }}</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-2xl border border-green-100 bg-white p-4">
+            <p class="text-sm font-semibold text-green-900">Events Graph</p>
+            <div class="mt-4 flex flex-col items-center gap-4 rounded-xl bg-green-50/60 px-4 py-4">
+              <div class="h-44 w-44 rounded-full border-4 border-white shadow" [style]="eventPieStyle"></div>
+              <div class="grid w-full gap-2 sm:grid-cols-2">
+                <div *ngFor="let segment of eventPieSegments" class="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs text-green-900">
+                  <span class="h-3 w-3 rounded-full" [style.background]="segment.color"></span>
+                  <span class="font-medium">{{ segment.label }}</span>
+                  <span class="ml-auto font-semibold">{{ segment.value }}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #noActiveOverviewUser>
+          <p class="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+            No active events yet. Graph/chart will appear when active events are available.
+          </p>
+        </ng-template>
+      </section>
+
+      <section *ngIf="activeSection === 'create-event'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Create Event</h2>
+        <form class="mt-4 grid gap-3" (ngSubmit)="createEvent()">
+          <input type="text" [(ngModel)]="eventForm.title" name="title" required placeholder="Event title" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <textarea [(ngModel)]="eventForm.description" name="description" rows="3" placeholder="Description" class="w-full rounded-xl border border-green-200 px-4 py-3"></textarea>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <input type="date" [(ngModel)]="eventForm.eventDate" name="eventDate" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+            <input type="date" [(ngModel)]="eventForm.endDate" name="endDate" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <input type="text" [(ngModel)]="eventForm.location" name="location" placeholder="Location" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          </div>
+          <input type="file" name="eventImageFile" accept="image/*" (change)="onEventImageSelected($event)" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <p class="text-xs text-green-700">Accepted: JPG, PNG, WEBP. Max {{ eventImageMaxMb }}MB.</p>
+          <input type="url" [(ngModel)]="eventForm.imageUrl" name="imageUrl" placeholder="or Event image URL" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+
+          <div class="rounded-2xl border border-green-100 bg-green-50/40 p-4">
+            <label class="inline-flex items-center gap-2 text-sm font-medium text-green-900">
+              <input type="checkbox" [(ngModel)]="useCustomForm" name="useCustomFormUser" />
+              <span>Use custom feedback form for this event</span>
+            </label>
+
+            <div *ngIf="useCustomForm" class="mt-3 grid gap-3">
+              <input type="text" [(ngModel)]="questionForm.label" name="questionLabelUser" placeholder="Question label" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+              <div class="grid gap-3 sm:grid-cols-3">
+                <select [(ngModel)]="questionForm.type" name="questionTypeUser" class="rounded-xl border border-green-200 px-4 py-3">
+                  <option value="text">Text answer</option>
+                  <option value="radio">Single choice (radio)</option>
+                  <option value="checkbox">Multi choice (checkbox)</option>
+                </select>
+                <label class="inline-flex items-center gap-2 rounded-xl border border-green-200 px-4 py-3 text-sm text-green-800">
+                  <input type="checkbox" [(ngModel)]="questionForm.required" name="questionRequiredUser" />
+                  Required
+                </label>
+                <button type="button" (click)="addCustomQuestion()" class="rounded-xl border border-green-300 px-4 py-3 text-sm font-semibold text-green-900 hover:bg-green-100">
+                  <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Add Question</span>
+                </button>
+              </div>
+              <input
+                *ngIf="questionForm.type === 'radio' || questionForm.type === 'checkbox'"
+                type="text"
+                [(ngModel)]="questionForm.optionsText"
+                name="questionOptionsUser"
+                placeholder="Options separated by comma"
+                class="w-full rounded-xl border border-green-200 px-4 py-3"
+              />
+              <div class="space-y-2">
+                <article *ngFor="let question of customQuestions; let i = index" class="flex items-start justify-between gap-3 rounded-xl border border-green-100 bg-white p-3">
+                  <div>
+                    <p class="text-sm font-semibold text-green-900">{{ i + 1 }}. {{ question.label }}</p>
+                    <p class="text-xs text-green-700">{{ question.type }} <span *ngIf="question.required">• required</span></p>
+                    <p *ngIf="question.options?.length" class="mt-1 text-xs text-green-700">{{ question.options?.join(', ') }}</p>
+                  </div>
+                  <button type="button" (click)="removeCustomQuestion(i)" class="rounded-lg border border-red-300 px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-50">
+                    <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Remove</span>
+                  </button>
+                </article>
+                <p *ngIf="!customQuestions.length" class="text-xs text-green-700">No custom questions yet. Default feedback form will be used.</p>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="w-fit rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400">
+            <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Create Event</span>
+          </button>
+        </form>
+        <p *ngIf="generatedCode" class="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-semibold text-green-900">
+          Generated Event Code: {{ generatedCode }}
+        </p>
+        <button
+          *ngIf="generatedCode"
+          type="button"
+          (click)="downloadGeneratedEventPdf()"
+          class="mt-3 rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-green-900"
+        >
+          <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Download PDF (Code + QR)</span>
+        </button>
+      </section>
+
+      <section *ngIf="activeSection === 'events-feedback'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Events & Feedback</h2>
+        <div class="mt-4 space-y-3">
+          <article *ngFor="let event of events" class="rounded-2xl border border-green-100 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="font-semibold text-green-900">
+                {{ event.title }}
+                <span class="ml-2 rounded bg-green-50 px-2 py-1 text-xs text-green-800">{{ event.event_code }}</span>
+                <span *ngIf="isExpired(event)" class="ml-2 rounded bg-red-100 px-2 py-1 text-xs text-red-700">Expired</span>
+              </p>
+              <div class="flex flex-wrap items-center gap-2">
+                <button (click)="viewEventFeedback(event.id)" class="rounded-lg border border-green-200 px-3 py-1 text-xs font-medium text-green-800 hover:bg-green-50">
+                  <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M8 10h8M8 14h5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>{{ selectedEventId === event.id ? 'Close Feedback' : 'View Feedback' }}</span>
+                </button>
+                <button (click)="downloadEventPdf(event)" class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Download QR PDF</span></button>
+                <button (click)="removeEventImage(event)" class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Remove Image</span></button>
+                <button (click)="startUserEventEdit(event)" class="rounded-lg border border-amber-300 px-3 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>Edit Event</span></button>
+                <button (click)="deleteEvent(event)" class="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6M14 11v6"/><path stroke-linecap="round" d="M9 7V4h6v3"/></svg>Delete Event</span></button>
+              </div>
+            </div>
+            <p class="mt-1 text-sm text-green-700">Feedback count: {{ event.feedback_count || 0 }}</p>
+            <p class="mt-1 text-xs text-green-700">End date: {{ event.end_date || 'No expiry' }}</p>
+
+            <form *ngIf="editingUserEventId === event.id" class="mt-3 grid gap-2 rounded-xl border border-green-100 bg-green-50/40 p-3" (ngSubmit)="saveUserEventEdit(event.id)">
+              <input type="text" [(ngModel)]="userEventEditForm.title" name="userEditTitle{{ event.id }}" required placeholder="Event title" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+              <textarea [(ngModel)]="userEventEditForm.description" name="userEditDescription{{ event.id }}" rows="2" placeholder="Description" class="rounded-lg border border-green-200 px-3 py-2 text-sm"></textarea>
+              <div class="grid gap-2 sm:grid-cols-2">
+                <input type="date" [(ngModel)]="userEventEditForm.eventDate" name="userEditDate{{ event.id }}" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+                <input type="date" [(ngModel)]="userEventEditForm.endDate" name="userEditEndDate{{ event.id }}" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+              </div>
+              <div class="grid gap-2 sm:grid-cols-2">
+                <input type="text" [(ngModel)]="userEventEditForm.location" name="userEditLocation{{ event.id }}" placeholder="Location" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+              </div>
+              <input type="file" accept="image/*" name="userEditImageFile{{ event.id }}" (change)="onUserEditImageSelected($event)" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+              <p class="text-xs text-green-700">Upload new image if you want to replace the current one.</p>
+              <div class="flex gap-2">
+                <button type="submit" class="rounded-lg bg-primary-300 px-3 py-1.5 text-xs font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M5 4h12l2 2v14H5z"/><path stroke-linecap="round" d="M8 4v6h8"/></svg>Save</span></button>
+                <button type="button" (click)="cancelUserEventEdit()" class="rounded-lg border border-green-300 px-3 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Cancel</span></button>
+              </div>
+            </form>
+
+            <div *ngIf="selectedEventId === event.id" class="mt-3 rounded-2xl border border-green-100 bg-green-50 p-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="font-semibold text-green-900">{{ selectedEventTitle }} - Feedback ({{ selectedEventFeedbackCount }})</p>
+                <button
+                  *ngIf="selectedEventFeedback.length"
+                  (click)="exportSelectedEventFeedbackCsv()"
+                  class="rounded-xl bg-green-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-900"
+                >
+                  <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Export Excel (CSV)</span>
+                </button>
+              </div>
+              <div class="mt-3 space-y-2">
+                <div *ngFor="let fb of selectedEventFeedback" class="rounded-xl border border-green-100 bg-white p-3 text-sm text-green-800">
+                  <p class="font-semibold text-green-900">{{ fb.rating }}/5 - {{ fb.satisfaction }}</p>
+                  <p class="mt-1">{{ fb.comment }}</p>
+                  <p class="mt-1 text-xs text-green-700">
+                    {{ fb.name || 'Anonymous' }}
+                    <span *ngIf="fb.email">• {{ fb.email }}</span>
+                  </p>
+                  <div *ngIf="fb.custom_answers | keyvalue as answers" class="mt-2 space-y-1">
+                    <div *ngFor="let answer of answers" class="rounded-lg bg-green-50 px-2.5 py-1.5 text-xs text-green-800">
+                      <span class="font-semibold">{{ answer.key }}:</span> {{ formatAnswer(answer.value) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+          <p *ngIf="!events.length" class="text-sm text-green-700">No events yet.</p>
+        </div>
+      </section>
+
+      <section *ngIf="activeSection === 'feedback-history'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-xl font-semibold text-green-900">Feedback History</h2>
+          <button (click)="exportFeedbackCsv()" class="rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white">
+            <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Export Excel (CSV)</span>
+          </button>
+        </div>
+        <div class="space-y-2">
+          <div *ngFor="let row of feedbackHistory" class="space-y-2">
+            <div
+              class="cursor-pointer rounded-xl border border-green-100 p-3 text-sm text-green-800 transition hover:bg-green-50"
+              (click)="viewFeedbackHistoryDetail(row)"
+            >
+              <span class="font-medium">{{ row.event_title }}</span> ({{ row.event_code }}) - {{ row.rating }}/5 - {{ row.comment }}
+            </div>
+
+            <div *ngIf="selectedFeedbackHistoryItem?.id === row.id" class="rounded-2xl border border-green-200 bg-green-50 p-4">
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <h3 class="text-base font-semibold text-green-900">Feedback Detail</h3>
+                <button
+                  type="button"
+                  (click)="closeFeedbackHistoryDetail(); $event.stopPropagation()"
+                  class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-white"
+                >
+                  <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>Close</span>
+                </button>
+              </div>
+
+              <div class="space-y-1 text-sm text-green-900">
+                <p><span class="font-semibold">Event:</span> {{ row.event_title }} ({{ row.event_code }})</p>
+                <p><span class="font-semibold">Rating:</span> {{ row.rating }}/5</p>
+                <p><span class="font-semibold">Satisfaction:</span> {{ row.satisfaction }}</p>
+                <p><span class="font-semibold">Comment:</span> {{ row.comment }}</p>
+                <p><span class="font-semibold">Name:</span> {{ row.name || 'Anonymous' }}</p>
+                <p><span class="font-semibold">Email:</span> {{ row.email || '-' }}</p>
+                <p><span class="font-semibold">Date:</span> {{ row.created_at }}</p>
+              </div>
+
+              <div *ngIf="row.custom_answers | keyvalue as answers" class="mt-3 space-y-1">
+                <div *ngFor="let answer of answers" class="rounded-lg bg-white px-2.5 py-1.5 text-xs text-green-800">
+                  <span class="font-semibold">{{ answer.key }}:</span> {{ formatAnswer(answer.value) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <p *ngIf="!feedbackHistory.length" class="text-sm text-green-700">No feedback history yet.</p>
+        </div>
+      </section>
+
+      <section *ngIf="activeSection === 'payments'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Payments</h2>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-green-100 p-4">
+            <p class="font-medium text-green-900">Subscription</p>
+            <select [(ngModel)]="subscriptionPlan" name="subscriptionPlan" class="mt-2 w-full rounded-xl border border-green-200 px-4 py-3">
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            <p class="mt-2 text-sm text-green-700">
+              Price: <span class="font-semibold">{{ currency }} {{ selectedSubscriptionPrice | number }}</span>
+            </p>
+            <div class="mt-3 flex flex-wrap items-center gap-1">
+              <img src="assets/payment-logos/mpesa.svg" alt="M-Pesa" class="h-5 w-auto rounded" />
+              <img src="assets/payment-logos/airtel-money.svg" alt="Airtel Money" class="h-5 w-auto rounded" />
+              <img src="assets/payment-logos/tigo-pesa.svg" alt="Tigo Pesa" class="h-5 w-auto rounded" />
+              <img src="assets/payment-logos/halopesa.svg" alt="HaloPesa" class="h-5 w-auto rounded" />
+              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">SelcomPay</span>
+              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">VISA</span>
+            </div>
+            <button (click)="proceedSubscriptionPayment()" class="mt-3 rounded-xl bg-green-800 px-4 py-2 text-white"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg>Proceed to Payment API</span></button>
+          </div>
+          <div class="rounded-2xl border border-green-100 p-4">
+            <p class="font-medium text-green-900">Donation</p>
+            <input type="number" min="1" [(ngModel)]="donationAmount" name="donationAmount" class="mt-2 w-full rounded-xl border border-green-200 px-4 py-3" />
+            <p class="mt-2 text-sm text-green-700">
+              Amount: <span class="font-semibold">{{ currency }} {{ donationAmount | number }}</span>
+            </p>
+            <div class="mt-3 flex flex-wrap items-center gap-1">
+              <img src="assets/payment-logos/mpesa.svg" alt="M-Pesa" class="h-5 w-auto rounded" />
+              <img src="assets/payment-logos/airtel-money.svg" alt="Airtel Money" class="h-5 w-auto rounded" />
+              <img src="assets/payment-logos/tigo-pesa.svg" alt="Tigo Pesa" class="h-5 w-auto rounded" />
+              <img src="assets/payment-logos/halopesa.svg" alt="HaloPesa" class="h-5 w-auto rounded" />
+              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">SelcomPay</span>
+              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">VISA</span>
+            </div>
+            <button (click)="proceedDonationPayment()" class="mt-3 rounded-xl bg-green-700 px-4 py-2 text-white"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg>Proceed to Payment API</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section *ngIf="activeSection === 'payments-history'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-xl font-semibold text-green-900">Payment History</h2>
+          <button
+            *ngIf="payments.length"
+            (click)="clearAllPaymentHistory()"
+            class="rounded-xl border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+          >
+            <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 7h16M10 11v6M14 11v6"/><path stroke-linecap="round" d="M9 7V4h6v3"/></svg>Clear All</span>
+          </button>
+        </div>
+        <div class="mt-4 space-y-2">
+          <div *ngFor="let payment of payments" class="flex items-center justify-between gap-3 rounded-xl border border-green-100 p-3 text-sm text-green-800">
+            <span>{{ payment.payment_type }} - {{ payment.amount }} ({{ payment.status }})</span>
+            <button
+              (click)="deletePaymentHistoryItem(payment.id)"
+              class="rounded-lg border border-red-300 px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
+            >
+              <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 7h16M10 11v6M14 11v6"/></svg>Delete</span>
+            </button>
+          </div>
+          <p *ngIf="!payments.length" class="text-sm text-green-700">No payments yet.</p>
+        </div>
+      </section>
+
+      <section *ngIf="activeSection === 'profile'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Profile Settings</h2>
+        <form class="mt-4 grid gap-3" (ngSubmit)="updateProfile()">
+          <input type="text" [(ngModel)]="profileForm.name" name="profileName" placeholder="Full name" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <input type="text" [(ngModel)]="profileForm.organization" name="profileOrg" placeholder="Organization" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <input type="url" [(ngModel)]="profileForm.profileImageUrl" name="profileImageUrl" placeholder="Profile image URL" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <button type="submit" class="w-fit rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>Update Profile</span></button>
+        </form>
+
+        <div class="mt-4 border-t border-green-100 pt-4">
+          <input type="file" accept="image/*" (change)="onProfileImageSelected($event)" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <p class="mt-2 text-xs text-green-700">Profile image: JPG, PNG, WEBP. Max {{ profileImageMaxMb }}MB.</p>
+          <button (click)="uploadProfileImage()" class="mt-3 rounded-xl border border-green-300 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 16V4m0 0 4 4m-4-4-4 4"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg>Upload Profile Picture</span></button>
+        </div>
+      </section>
+
+      <section *ngIf="activeSection === 'security'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Security</h2>
+        <form class="mt-4 grid gap-3" (ngSubmit)="changePassword()">
+          <input type="password" [(ngModel)]="passwordForm.oldPassword" name="oldPassword" placeholder="Old password" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <input type="password" [(ngModel)]="passwordForm.newPassword" name="newPassword" placeholder="New password" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <input type="password" [(ngModel)]="passwordForm.confirmNewPassword" name="confirmNewPassword" placeholder="Confirm new password" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <button type="submit" class="w-fit rounded-xl border border-green-300 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Change Password</span></button>
+        </form>
+      </section>
+    </main>
+  </div>
+</div>

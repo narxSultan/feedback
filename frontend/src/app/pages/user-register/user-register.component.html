@@ -1,0 +1,26 @@
+<div class="flex min-h-screen items-center justify-center px-4">
+  <div class="w-full max-w-md rounded-3xl border border-primary-100 bg-white p-8 shadow-soft">
+    <div class="flex items-center justify-between gap-3">
+      <h1 class="text-3xl font-semibold text-green-900">User Registration</h1>
+      <a routerLink="/" class="inline-flex items-center gap-1 rounded-lg border border-green-200 px-3 py-1.5 text-sm font-medium text-green-800 hover:bg-green-50">
+        <span aria-hidden="true">←</span>
+        <span>Back</span>
+      </a>
+    </div>
+    <p class="mt-2 text-green-700">Create your account to create events and receive feedback.</p>
+
+    <form class="mt-6 space-y-3" (ngSubmit)="submit()">
+      <input type="text" [(ngModel)]="form.name" name="name" required placeholder="Full name" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      <input type="email" [(ngModel)]="form.email" name="email" required placeholder="Email" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      <input type="password" [(ngModel)]="form.password" name="password" required placeholder="Password" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      <input type="text" [(ngModel)]="form.organization" name="organization" placeholder="Organization (optional)" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      <button type="submit" class="w-full rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Register</span></button>
+      <p *ngIf="message" class="text-sm text-red-600">{{ message }}</p>
+    </form>
+
+    <div class="mt-4 flex items-center justify-between">
+      <a routerLink="/user-login" class="text-sm text-green-700 hover:underline">Already have account? Login</a>
+      <a routerLink="/forgot-password" class="text-sm text-green-700 hover:underline">Forgot password?</a>
+    </div>
+  </div>
+</div>
