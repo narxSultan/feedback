@@ -5,6 +5,22 @@ function getTransporter() {
   const user = process.env.SMTP_USER || process.env.EMAIL_USER;
   const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 
+  if (provider === 'brevo') {
+    if (!user || !pass) {
+      return null;
+    }
+
+    return nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: String(process.env.SMTP_SECURE || 'false') === 'true',
+      auth: {
+        user,
+        pass,
+      },
+    });
+  }
+
   if (provider === 'gmail') {
     if (!user || !pass) {
       return null;
