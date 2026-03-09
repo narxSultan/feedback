@@ -67,6 +67,11 @@ export class UserDashboardPageComponent implements OnInit {
   materialsLoading = false;
   materialsMessage = '';
   isUploadingMaterial = false;
+  editingMaterialId: number | null = null;
+  materialEditForm = {
+    originalName: '',
+    category: 'presentation'
+  };
 
   eventForm = {
     title: '',
@@ -219,6 +224,7 @@ export class UserDashboardPageComponent implements OnInit {
     this.selectedMaterialFile = null;
     this.materialsMessage = '';
     this.loadSelectedEventMaterials(event.id);
+    this.cancelMaterialEdit();
   }
 
   loadSelectedEventMaterials(eventId: number) {
@@ -271,6 +277,72 @@ export class UserDashboardPageComponent implements OnInit {
     });
   }
 
+  startEditingMaterial(material: EventMaterial) {
+    this.editingMaterialId = material.id;
+    this.materialEditForm = {
+      originalName: material.original_name || '',
+      category: material.category || 'presentation'
+    };
+    this.materialsMessage = '';
+  }
+
+  cancelMaterialEdit() {
+    this.editingMaterialId = null;
+    this.materialEditForm = {
+      originalName: '',
+      category: 'presentation'
+    };
+  }
+
+  saveMaterialEdit(material: EventMaterial) {
+    if (!this.selectedMaterialEvent) {
+      return;
+    }
+    const trimmedName = (this.materialEditForm.originalName || '').trim();
+    if (!trimmedName) {
+      this.materialsMessage = 'Enter a material name';
+      return;
+    }
+    this.eventsService.updateEventMaterial(
+      this.selectedMaterialEvent.id,
+      material.id,
+      {
+        original_name: trimmedName,
+        category: this.materialEditForm.category
+      }
+    ).subscribe({
+      next: (updated) => {
+        this.eventMaterials = this.eventMaterials.map((item) => (item.id === updated.id ? updated : item));
+        this.materialsMessage = 'Material updated';
+        this.cancelMaterialEdit();
+      },
+      error: (error) => {
+        this.materialsMessage = error?.error?.message || 'Failed to update material';
+      }
+    });
+  }
+
+  deleteMaterial(material: EventMaterial) {
+    if (!this.selectedMaterialEvent) {
+      return;
+    }
+    if (!confirm('Are you sure you want to delete this material?')) {
+      return;
+    }
+    this.eventsService.deleteEventMaterial(this.selectedMaterialEvent.id, material.id).subscribe({
+      next: () => {
+        this.eventMaterials = this.eventMaterials.filter((item) => item.id !== material.id);
+        this.materialsMessage = 'Material deleted';
+        if (this.editingMaterialId === material.id) {
+          this.cancelMaterialEdit();
+        }
+      },
+      error: (error) => {
+        this.materialsMessage = error?.error?.message || 'Failed to delete material';
+      }
+    });
+  }
+
   downloadMaterial(material: EventMaterial) {
     if (!material.file_url) {
       return;
@@ -291,6 +363,7 @@ export class UserDashboardPageComponent implements OnInit {
     this.isUploadingMaterial = false;
     this.materialsSearchTerm = '';
     this.selectedMaterialCategory = 'presentation';
+    this.cancelMaterialEdit();
   }
 
   loadFeedbackHistory() {

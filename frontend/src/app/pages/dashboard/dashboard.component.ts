@@ -60,6 +60,11 @@ export class DashboardPageComponent {
   materialsLoading = false;
   materialsMessage = '';
   isUploadingMaterial = false;
+  editingMaterialId: number | null = null;
+  materialEditForm = {
+    originalName: '',
+    category: 'presentation'
+  };
 
   constructor(
     private authService: AuthService,
@@ -166,6 +171,7 @@ export class DashboardPageComponent {
     this.selectedMaterialFile = null;
     this.materialsMessage = '';
     this.loadSelectedEventMaterials(event.id);
+    this.cancelMaterialEdit();
   }
 
   loadSelectedEventMaterials(eventId: number) {
@@ -230,6 +236,75 @@ export class DashboardPageComponent {
     anchor.click();
   }
 
+  startEditingMaterial(material: EventMaterial) {
+    this.editingMaterialId = material.id;
+    this.materialEditForm = {
+      originalName: material.original_name || '',
+      category: material.category || 'presentation'
+    };
+    this.materialsMessage = '';
+  }
+
+  cancelMaterialEdit() {
+    this.editingMaterialId = null;
+    this.materialEditForm = {
+      originalName: '',
+      category: 'presentation'
+    };
+  }
+
+  saveMaterialEdit(material: EventMaterial) {
+    if (!this.selectedMaterialEvent) {
+      return;
+    }
+    const trimmedName = (this.materialEditForm.originalName || '').trim();
+    if (!trimmedName) {
+      this.materialsMessage = this.isSwahili ? 'Weka jina la material' : 'Enter a material name';
+      return;
+    }
+    this.eventsService.updateEventMaterial(
+      this.selectedMaterialEvent.id,
+      material.id,
+      {
+        original_name: trimmedName,
+        category: this.materialEditForm.category
+      }
+    ).subscribe({
+      next: (updated) => {
+        this.eventMaterials = this.eventMaterials.map((item) => (item.id === updated.id ? updated : item));
+        this.materialsMessage = this.isSwahili ? 'Material imesasishwa' : 'Material updated';
+        this.cancelMaterialEdit();
+      },
+      error: (error) => {
+        this.materialsMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kusasisha material' : 'Failed to update material');
+      }
+    });
+  }
+
+  deleteMaterial(material: EventMaterial) {
+    if (!this.selectedMaterialEvent) {
+      return;
+    }
+    const confirmation = this.isSwahili
+      ? 'Una hakika unataka kufuta material hii?'
+      : 'Are you sure you want to delete this material?';
+    if (!confirm(confirmation)) {
+      return;
+    }
+    this.eventsService.deleteEventMaterial(this.selectedMaterialEvent.id, material.id).subscribe({
+      next: () => {
+        this.eventMaterials = this.eventMaterials.filter((item) => item.id !== material.id);
+        this.materialsMessage = this.isSwahili ? 'Material imefutwa' : 'Material deleted';
+        if (this.editingMaterialId === material.id) {
+          this.cancelMaterialEdit();
+        }
+      },
+      error: (error) => {
+        this.materialsMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kufuta material' : 'Failed to delete material');
+      }
+    });
+  }
+
   resetMaterialsSection() {
     this.selectedMaterialEvent = null;
     this.selectedMaterialFile = null;
@@ -239,6 +314,7 @@ export class DashboardPageComponent {
     this.isUploadingMaterial = false;
     this.materialsSearchTerm = '';
     this.selectedMaterialCategory = 'presentation';
+    this.cancelMaterialEdit();
   }
 
   onAdImageSelected(event: Event) {

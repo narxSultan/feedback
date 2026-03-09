@@ -473,12 +473,43 @@
               <div class="space-y-3">
                 <div *ngIf="materialsLoading" class="text-sm text-green-700">Loading materials...</div>
                 <div *ngIf="eventMaterials.length" class="space-y-2 max-h-48 overflow-y-auto">
-                  <article *ngFor="let material of eventMaterials" class="flex items-center justify-between rounded-xl border border-green-100 bg-green-50/40 px-3 py-2 text-xs text-green-800">
-                    <div>
+                  <article *ngFor="let material of eventMaterials" class="flex flex-col gap-2 rounded-xl border border-green-100 bg-green-50/40 px-3 py-2 text-xs text-green-800">
+                    <div class="flex flex-col gap-1">
                       <p class="font-semibold text-green-900">{{ material.original_name }}</p>
                       <p class="text-[11px] uppercase text-green-600">{{ material.category | titlecase }} · {{ material.mime_type }}</p>
+                      <ng-container *ngIf="editingMaterialId === material.id">
+                        <div class="space-y-2 border-t border-green-100 pt-2 text-[11px]">
+                          <input
+                            [(ngModel)]="materialEditForm.originalName"
+                            name="editMaterialName{{ material.id }}"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="w-full rounded-xl border border-green-200 px-3 py-2 text-[11px]"
+                            placeholder="Material name"
+                          />
+                          <select
+                            [(ngModel)]="materialEditForm.category"
+                            name="editMaterialCategory{{ material.id }}"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="w-full rounded-xl border border-green-200 px-3 py-2 text-[11px]"
+                          >
+                            <option value="presentation">Presentation</option>
+                            <option value="video">Video</option>
+                            <option value="audio">Audio</option>
+                            <option value="document">Document</option>
+                            <option value="other">Other</option>
+                          </select>
+                          <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" class="rounded-full bg-primary-200 px-3 py-1 text-[11px] font-semibold text-green-900" (click)="saveMaterialEdit(material)">Save</button>
+                            <button type="button" class="rounded-full border border-red-200 px-3 py-1 text-[11px] font-semibold text-red-700" (click)="cancelMaterialEdit()">Cancel</button>
+                          </div>
+                        </div>
+                      </ng-container>
                     </div>
-                    <button type="button" class="rounded-full border border-green-200 px-3 py-1 text-[11px] font-semibold" (click)="downloadMaterial(material)">Download</button>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button type="button" class="rounded-full border border-green-200 px-3 py-1 text-[11px] font-semibold" (click)="downloadMaterial(material)">Download</button>
+                      <button type="button" class="rounded-full border border-primary-200 px-3 py-1 text-[11px] font-semibold text-primary-700" (click)="startEditingMaterial(material)">Edit</button>
+                      <button type="button" class="rounded-full border border-red-200 px-3 py-1 text-[11px] font-semibold text-red-700" (click)="deleteMaterial(material)">Delete</button>
+                    </div>
                   </article>
                 </div>
                 <p *ngIf="!eventMaterials.length && !materialsLoading" class="text-xs text-green-600">No materials uploaded yet.</p>

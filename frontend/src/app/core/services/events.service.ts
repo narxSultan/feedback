@@ -129,4 +129,18 @@ export class EventsService {
       headers: this.authHeaders()
     });
   }
+
+  updateEventMaterial(eventId: number, materialId: number, payload: { original_name?: string; category?: string }) {
+    return this.http.patch<EventMaterial>(
+      `${this.api.baseUrl}/events/${eventId}/materials/${materialId}`,
+      payload,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  deleteEventMaterial(eventId: number, materialId: number) {
+    return this.http.delete<{ message: string }>(`${this.api.baseUrl}/events/${eventId}/materials/${materialId}`, {
+      headers: this.authHeaders()
+    });
+  }
 }
