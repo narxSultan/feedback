@@ -13,13 +13,17 @@ export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      const hasAuthHeader = req.headers.has('Authorization');
+
+      if (error.status === 401 && hasAuthHeader) {
         const message = typeof error.error?.message === 'string'
           ? error.error.message.toLowerCase()
           : '';
-        if (SESSION_ERRORS.some((term) => message.includes(term))) {
+        if (!message || SESSION_ERRORS.some((term) => message.includes(term))) {
+          const adminRole = localStorage.getItem('auth_role');
+          const userRole = localStorage.getItem('user_role');
           auth.logout();
-          router.navigate(['/admin-login']);
+          router.navigate([adminRole === 'admin' || userRole === 'admin' ? '/admin-login' : '/user-login']);
         }
       }
       return throwError(() => error);
