@@ -42,10 +42,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       title: 'Workshop',
       image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80'
     },
-    {
-      title: 'Networking',
-      image: 'https://images.unsplash.com/photo-1540317580384-e5d43867caa6?auto=format&fit=crop&w=1200&q=80'
-    }
+    
   ];
   eventSlides: Array<{ id?: number; title: string; image: string; description?: string; eventCode?: string; targetUrl?: string; slideType?: 'event' | 'ad' | 'default' }> = [...this.defaultSlides];
 
