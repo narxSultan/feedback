@@ -706,7 +706,8 @@ async function downloadEventCodePdf(req, res, next) {
       return res.status(403).json({ message: 'You can only download PDF for your own events' });
     }
 
-    const qrData = `${process.env.FRONTEND_URL || 'http://localhost:4200'}?eventCode=${encodeURIComponent(event.event_code)}`;
+    const frontendRoot = (process.env.FRONTEND_BASE_URL || process.env.FRONTEND_URL || 'http://localhost:4200').replace(/\/+$/, '');
+    const qrData = `${frontendRoot}?eventCode=${encodeURIComponent(event.event_code)}`;
     const qrDataUrl = await QRCode.toDataURL(qrData, { width: 260, margin: 1 });
     const qrBase64 = qrDataUrl.split(',')[1];
     const qrBuffer = Buffer.from(qrBase64, 'base64');

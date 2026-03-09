@@ -1,19 +1,7 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
-
-function signToken(admin) {
-  return jwt.sign(
-    {
-      id: admin.id,
-      email: admin.email,
-      name: admin.name,
-      role: 'admin',
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '8h' }
-  );
-}
+const sessionService = require('../services/sessionService');
+const { signAdminToken } = require('../utils/tokenHelper');
 
 async function loginAdmin(req, res, next) {
   try {
@@ -39,8 +27,14 @@ async function loginAdmin(req, res, next) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    const sessionId = await sessionService.createSession({
+      accountType: 'admin',
+      accountId: admin.id,
+      deviceInfo: req.headers['user-agent'] || null
+    });
+
     return res.json({
-      token: signToken(admin),
+      token: signAdminToken(admin, sessionId),
       admin: {
         id: admin.id,
         name: admin.name,

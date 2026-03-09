@@ -1,21 +1,9 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const pool = require('../config/db');
 const { sendPasswordResetEmail } = require('../utils/emailService');
-
-function signUserToken(user) {
-  return jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role || 'user',
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '8h' }
-  );
-}
+const sessionService = require('../services/sessionService');
+const { signUserToken, signAdminToken } = require('../utils/tokenHelper');
 
 async function registerUser(req, res, next) {
   try {
@@ -39,9 +27,14 @@ async function registerUser(req, res, next) {
     );
 
     const user = inserted.rows[0];
+    const sessionId = await sessionService.createSession({
+      accountType: 'user',
+      accountId: user.id,
+      deviceInfo: req.headers['user-agent'] || null
+    });
 
     return res.status(201).json({
-      token: signUserToken(user),
+      token: signUserToken(user, sessionId),
       user,
     });
   } catch (error) {
@@ -71,8 +64,14 @@ async function loginUser(req, res, next) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
+      const sessionId = await sessionService.createSession({
+        accountType: 'user',
+        accountId: user.id,
+        deviceInfo: req.headers['user-agent'] || null
+      });
+
       return res.json({
-        token: signUserToken(user),
+        token: signUserToken(user, sessionId),
         user: {
           id: user.id,
           name: user.name,
@@ -102,19 +101,14 @@ async function loginUser(req, res, next) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const adminToken = jwt.sign(
-      {
-        id: admin.id,
-        email: admin.email,
-        name: admin.name,
-        role: 'admin',
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '8h' }
-    );
+    const sessionId = await sessionService.createSession({
+      accountType: 'admin',
+      accountId: admin.id,
+      deviceInfo: req.headers['user-agent'] || null
+    });
 
     return res.json({
-      token: adminToken,
+      token: signAdminToken(admin, sessionId),
       user: {
         id: admin.id,
         name: admin.name,

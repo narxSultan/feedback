@@ -11,13 +11,6 @@ const app = express();
  CORS configuration
  allow Angular frontend origin from env and local defaults
 */
-const localDevOrigins = [
-  'http://localhost:4200',
-  'http://127.0.0.1:4200',
-  'http://localhost:65469',
-  'http://127.0.0.1:65469',
-];
-
 const envOrigins = [
   process.env.FRONTEND_BASE_URL,
   ...(process.env.ADDITIONAL_FRONTEND_ORIGINS
@@ -25,10 +18,18 @@ const envOrigins = [
     : []),
 ];
 
-const allowedOrigins = [...new Set([...envOrigins, ...localDevOrigins])].filter(Boolean);
+const allowedOrigins = [...new Set(envOrigins)].filter(Boolean);
+const isLocalDevOrigin = (origin) => /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const sessionService = require('../services/sessionService');
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -11,6 +12,27 @@ function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.sessionId) {
+      return res.status(401).json({ message: 'Invalid session' });
+    }
+
+    const session = await sessionService.getSessionById(decoded.sessionId);
+    if (!session) {
+      return res.status(401).json({ message: 'Session not found or expired' });
+    }
+
+    if (session.account_type && session.account_type !== decoded.role) {
+      return res.status(401).json({ message: 'Session mismatch' });
+    }
+
+    const lastActivity = new Date(session.last_activity).getTime();
+    const idleMs = Date.now() - lastActivity;
+    if (idleMs > sessionService.SESSION_IDLE_TIMEOUT_MS) {
+      await sessionService.deleteSession(session.session_id);
+      return res.status(401).json({ message: 'Session expired due to inactivity' });
+    }
+
+    await sessionService.refreshSession(session.session_id);
     req.actor = decoded;
     if (decoded.role === 'admin') {
       req.admin = decoded;
@@ -18,6 +40,7 @@ function authMiddleware(req, res, next) {
     if (decoded.role === 'user') {
       req.user = decoded;
     }
+    req.session = session;
     return next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid token' });
