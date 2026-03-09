@@ -23,6 +23,36 @@ EVENT_IMAGE_MAX_MB=1.5
 PROFILE_IMAGE_MAX_MB=1.0
 ```
 
+Configure email for password reset in `backend/.env`:
+
+```bash
+# Option 1: Brevo free SMTP
+EMAIL_PROVIDER=brevo
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-brevo-login
+SMTP_PASS=your-brevo-smtp-key
+FROM_EMAIL="Feedback System <no-reply@yourdomain.com>"
+FRONTEND_BASE_URL=http://localhost:4200
+
+# Option 2: Gmail App Password
+EMAIL_PROVIDER=gmail
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-16-char-app-password
+FROM_EMAIL="Feedback System <your-email@gmail.com>"
+FRONTEND_BASE_URL=http://localhost:4200
+
+# Option 3: SMTP
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-user
+SMTP_PASS=your-smtp-password
+FROM_EMAIL="Feedback System <no-reply@yourdomain.com>"
+FRONTEND_BASE_URL=http://localhost:4200
+```
+
 Create database tables:
 
 ```bash
@@ -98,4 +128,4 @@ Frontend URL: `http://localhost:4200`
 - User accounts can create their own events and pay subscription/donation from user dashboard
 - Admin can assign/remove user role (`user` or `admin`)
 - User dashboard includes feedback count/history, CSV export, profile update, profile image upload, and password change
-- Forgot password sends reset link to registered email (configure SMTP in `backend/.env`)
+- Forgot password sends reset link to registered email after configuring Gmail App Password or SMTP in `backend/.env`
