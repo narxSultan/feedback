@@ -57,7 +57,7 @@ async function sendPasswordResetEmail(toEmail, resetLink) {
   }
 
   await transporter.sendMail({
-    from: process.env.FROM_EMAIL || process.env.SMTP_USER || process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM || process.env.FROM_EMAIL || process.env.SMTP_USER || process.env.EMAIL_USER,
     to: toEmail,
     subject: 'Reset Your Password',
     text: `You requested a password reset. Click this link to reset your password: ${resetLink}`,
