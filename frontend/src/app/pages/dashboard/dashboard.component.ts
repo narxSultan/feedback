@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AdminService } from '../../core/services/admin.service';
 import { EventsService } from '../../core/services/events.service';
+import { LanguageService } from '../../core/services/language.service';
 import { EventItem, EventMaterial } from '../../core/models/types';
 
 @Component({
@@ -15,7 +16,6 @@ import { EventItem, EventMaterial } from '../../core/models/types';
 })
 export class DashboardPageComponent {
   activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials' = 'overview';
-  isSwahili = false;
   searchTerm = '';
   feedbacks: any[] = [];
   ads: any[] = [];
@@ -65,10 +65,17 @@ export class DashboardPageComponent {
     originalName: '',
     category: 'presentation'
   };
+  pendingMaterialToDelete: EventMaterial | null = null;
+  showMaterialDeleteDialog = false;
+  materialDeletingId: number | null = null;
+  pendingAdToDelete: { id: number; title?: string } | null = null;
+  showAdDeleteDialog = false;
+  adDeletingId: number | null = null;
 
   constructor(
     private authService: AuthService,
     private adminService: AdminService,
+    private languageService: LanguageService,
     private eventsService: EventsService,
     private router: Router
   ) {
@@ -86,8 +93,12 @@ export class DashboardPageComponent {
     return this.profile.profile_image_url || this.authService.getAdminProfileImage() || 'assets/logo.png';
   }
 
+  get isSwahili(): boolean {
+    return this.languageService.isSwahili;
+  }
+
   toggleLanguage() {
-    this.isSwahili = !this.isSwahili;
+    this.languageService.toggleLanguage();
   }
 
   setActiveSection(section: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials') {
@@ -285,24 +296,41 @@ export class DashboardPageComponent {
     if (!this.selectedMaterialEvent) {
       return;
     }
-    const confirmation = this.isSwahili
-      ? 'Una hakika unataka kufuta material hii?'
-      : 'Are you sure you want to delete this material?';
-    if (!confirm(confirmation)) {
+    this.pendingMaterialToDelete = material;
+    this.showMaterialDeleteDialog = true;
+  }
+
+  confirmMaterialDeletion() {
+    if (!this.selectedMaterialEvent || !this.pendingMaterialToDelete) {
+      this.resetMaterialDeleteDialog();
       return;
     }
-    this.eventsService.deleteEventMaterial(this.selectedMaterialEvent.id, material.id).subscribe({
+    const target = this.pendingMaterialToDelete;
+    this.materialDeletingId = target.id;
+    this.eventsService.deleteEventMaterial(this.selectedMaterialEvent.id, target.id).subscribe({
       next: () => {
-        this.eventMaterials = this.eventMaterials.filter((item) => item.id !== material.id);
+        this.eventMaterials = this.eventMaterials.filter((item) => item.id !== target.id);
         this.materialsMessage = this.isSwahili ? 'Material imefutwa' : 'Material deleted';
-        if (this.editingMaterialId === material.id) {
+        if (this.editingMaterialId === target.id) {
           this.cancelMaterialEdit();
         }
+        this.resetMaterialDeleteDialog();
       },
       error: (error) => {
         this.materialsMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kufuta material' : 'Failed to delete material');
+        this.resetMaterialDeleteDialog();
       }
     });
+  }
+
+  cancelMaterialDelete() {
+    this.resetMaterialDeleteDialog();
+  }
+
+  private resetMaterialDeleteDialog() {
+    this.pendingMaterialToDelete = null;
+    this.showMaterialDeleteDialog = false;
+    this.materialDeletingId = null;
   }
 
   resetMaterialsSection() {
@@ -356,7 +384,9 @@ export class DashboardPageComponent {
     });
   }
 
-  startEditAd(ad: any) {
+  startEditAd(ad: any, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
     this.editingAdId = ad.id;
     this.editAdForm = {
       title: ad.title || '',
@@ -414,21 +444,43 @@ export class DashboardPageComponent {
     submitUpdate();
   }
 
-  deleteAd(adId: number) {
-    const confirmed = window.confirm('Delete this ad image?');
-    if (!confirmed) {
+  deleteAd(ad: { id: number; title?: string }, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.pendingAdToDelete = ad;
+    this.showAdDeleteDialog = true;
+  }
+
+  confirmAdDeletion() {
+    if (!this.pendingAdToDelete) {
       return;
     }
+    this.performAdDeletion(this.pendingAdToDelete);
+  }
 
-    this.adminService.deleteAd(adId).subscribe({
+  cancelAdDelete() {
+    this.resetAdDeleteDialog();
+  }
+
+  private performAdDeletion(target: { id: number; title?: string }) {
+    this.adDeletingId = target.id;
+    this.adminService.deleteAd(target.id).subscribe({
       next: () => {
-        this.ads = this.ads.filter((ad) => ad.id !== adId);
+        this.ads = this.ads.filter((ad) => ad.id !== target.id);
         this.message = this.isSwahili ? 'Tangazo limefutwa' : 'Ad deleted successfully';
+        this.resetAdDeleteDialog();
       },
       error: (error) => {
         this.message = error?.error?.message || 'Failed to delete ad.';
+        this.resetAdDeleteDialog();
       }
     });
+  }
+
+  private resetAdDeleteDialog() {
+    this.pendingAdToDelete = null;
+    this.showAdDeleteDialog = false;
+    this.adDeletingId = null;
   }
 
   exportPublicFeedbackCsv() {

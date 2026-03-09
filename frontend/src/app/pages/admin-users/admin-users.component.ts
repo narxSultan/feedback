@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
+import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-admin-users-page',
@@ -19,7 +20,15 @@ export class AdminUsersPageComponent implements OnInit {
   activitiesPage = 0;
   readonly activitiesPerPage = 12;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private languageService: LanguageService) {}
+
+  get isSwahili(): boolean {
+    return this.languageService.isSwahili;
+  }
+
+  toggleLanguage() {
+    this.languageService.toggleLanguage();
+  }
 
   ngOnInit(): void {
     this.load();

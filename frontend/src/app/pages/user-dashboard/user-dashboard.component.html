@@ -547,3 +547,65 @@
     </main>
   </div>
 </div>
+
+  <div
+    *ngIf="showMaterialDeleteDialog"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+      <h3 class="text-lg font-semibold text-green-900">Confirm Delete Material</h3>
+      <p class="mt-2 text-sm text-green-700">
+        Are you sure you want to delete <strong>{{ pendingMaterialToDelete?.original_name }}</strong>? This cannot be undone.
+      </p>
+      <div class="mt-4 flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelDeleteMaterial()"
+          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="confirmDeleteMaterial()"
+          [disabled]="materialDeletingId === pendingMaterialToDelete?.id"
+          class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-60"
+        >
+          <span *ngIf="materialDeletingId !== pendingMaterialToDelete?.id">Delete</span>
+          <span *ngIf="materialDeletingId === pendingMaterialToDelete?.id">Deleting...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showMaterialDeleteDialog"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+      <h3 class="text-lg font-semibold text-green-900">Confirm delete</h3>
+      <p class="mt-2 text-sm text-green-700">
+        Are you sure you want to delete
+        <strong>{{ pendingMaterialToDelete?.original_name }}</strong>
+        from {{ selectedMaterialEvent?.title }}? This cannot be undone.
+      </p>
+      <div class="mt-4 flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelDeleteMaterial()"
+          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="confirmDeleteMaterial()"
+          [disabled]="materialDeletingId === pendingMaterialToDelete?.id"
+          class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-wait disabled:opacity-60"
+        >
+          <span *ngIf="materialDeletingId !== pendingMaterialToDelete?.id">Delete</span>
+          <span *ngIf="materialDeletingId === pendingMaterialToDelete?.id">Deleting...</span>
+        </button>
+      </div>
+    </div>
+  </div>

@@ -1,23 +1,39 @@
 <div class="min-h-screen px-4 py-10 sm:px-8">
   <div class="mx-auto max-w-6xl space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-semibold text-green-900">Users Management</h1>
-      <a routerLink="/dashboard" class="text-sm text-green-700 hover:underline">Back to Dashboard</a>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-3xl font-semibold text-green-900">{{ isSwahili ? 'Usimamizi wa Watumiaji' : 'Users Management' }}</h1>
+      <div class="flex items-center gap-3">
+        <a routerLink="/dashboard" class="text-sm text-green-700 hover:underline">
+          {{ isSwahili ? 'Rudi kwa Dashboard' : 'Back to Dashboard' }}
+        </a>
+        <button
+          type="button"
+          (click)="toggleLanguage()"
+          class="inline-flex items-center gap-2 rounded-full border border-green-300 bg-green-50 px-3 py-1 text-xs font-semibold text-green-800"
+        >
+          {{ isSwahili ? 'English' : 'Swahili' }}
+          <img
+            [src]="isSwahili ? 'https://flagcdn.com/w20/gb.png' : 'https://flagcdn.com/w20/tz.png'"
+            [alt]="isSwahili ? 'Switch to English' : 'Switch to Swahili'"
+            class="h-3 w-5 rounded-sm object-cover"
+          />
+        </button>
+      </div>
     </div>
 
     <p *ngIf="message" class="text-sm text-red-600">{{ message }}</p>
 
     <section class="rounded-3xl border border-primary-100 bg-white p-6 shadow-soft">
-      <h2 class="text-xl font-semibold text-green-900">Registered Users</h2>
+      <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Watumiaji Waliosajiliwa' : 'Registered Users' }}</h2>
       <div class="mt-4 overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead>
             <tr class="text-green-700">
-              <th class="py-2">Name</th>
-              <th class="py-2">Email</th>
-              <th class="py-2">Organization</th>
-              <th class="py-2">Role</th>
-              <th class="py-2">Actions</th>
+              <th class="py-2">{{ isSwahili ? 'Jina' : 'Name' }}</th>
+              <th class="py-2">{{ isSwahili ? 'Barua pepe' : 'Email' }}</th>
+              <th class="py-2">{{ isSwahili ? 'Shirika' : 'Organization' }}</th>
+              <th class="py-2">{{ isSwahili ? 'Wajibu' : 'Role' }}</th>
+              <th class="py-2">{{ isSwahili ? 'Vitendo' : 'Actions' }}</th>
             </tr>
           </thead>
           <tbody>
@@ -28,16 +44,25 @@
               <td class="py-2">{{ user.role || 'user' }}</td>
               <td class="py-2">
                 <div class="flex flex-wrap items-center gap-2">
-                  <button (click)="setRole(user.id, 'admin')" class="rounded border border-green-300 px-2 py-1 text-xs text-green-800"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Make Admin</span></button>
-                  <button (click)="setRole(user.id, 'user')" class="rounded border border-green-300 px-2 py-1 text-xs text-green-800"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 12h12"/></svg>Make User</span></button>
+                  <button (click)="setRole(user.id, 'admin')" class="rounded border border-green-300 px-2 py-1 text-xs text-green-800">
+                    <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>{{ isSwahili ? 'Fanya Admin' : 'Make Admin' }}</span>
+                  </button>
+                  <button (click)="setRole(user.id, 'user')" class="rounded border border-green-300 px-2 py-1 text-xs text-green-800">
+                    <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 12h12"/></svg>{{ isSwahili ? 'Fanya mtumiaji' : 'Make User' }}</span>
+                  </button>
                   <input
                     type="password"
                     [(ngModel)]="resetPasswords[user.id]"
                     [name]="'resetPassword' + user.id"
-                    placeholder="New password"
+                    [placeholder]="isSwahili ? 'Password mpya' : 'New password'"
                     class="rounded border border-green-300 px-2 py-1 text-xs"
                   />
-                  <button (click)="resetPassword(user.id)" class="rounded border border-amber-300 px-2 py-1 text-xs text-amber-700"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Reset Password</span></button>
+                  <button
+                    (click)="resetPassword(user.id)"
+                    class="rounded border border-amber-300 px-2 py-1 text-xs font-semibold text-amber-700"
+                  >
+                    <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>{{ isSwahili ? 'Badilisha password' : 'Reset Password' }}</span>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -47,25 +72,35 @@
     </section>
 
     <section class="rounded-3xl border border-primary-100 bg-white p-6 shadow-soft">
-      <div class="flex flex-wrap items-center gap-2">
-        <h2 class="text-xl font-semibold text-green-900">User Activities</h2>
+        <div class="flex flex-wrap items-center gap-2">
+        <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Matendo ya watumiaji' : 'User Activities' }}</h2>
         <input
           type="text"
           [(ngModel)]="activitiesSearch"
           name="activitiesSearch"
-          placeholder="Search by user name or email"
+          [placeholder]="isSwahili ? 'Tafuta kwa jina au barua pepe' : 'Search by user name or email'"
           class="min-w-[220px] flex-1 rounded-xl border border-green-200 px-4 py-2 text-sm outline-none focus:border-primary-400"
         />
-        <button (click)="loadActivities()" class="rounded-xl bg-primary-300 px-4 py-2 text-sm font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg>Search</span></button>
-        <button (click)="exportActivitiesCsv()" class="rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-green-900"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>Export Excel (CSV)</span></button>
+        <button
+          (click)="loadActivities()"
+          class="rounded-xl bg-primary-300 px-4 py-2 text-sm font-semibold text-green-900 hover:bg-primary-400"
+        >
+          <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3.5-3.5"/></svg>{{ isSwahili ? 'Tafuta' : 'Search' }}</span>
+        </button>
+        <button
+          (click)="exportActivitiesCsv()"
+          class="rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-green-900"
+        >
+          <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Hamisha Excel (CSV)' : 'Export Excel (CSV)' }}</span>
+        </button>
       </div>
-      <div class="mt-4 space-y-2">
+        <div class="mt-4 space-y-2">
         <div *ngFor="let act of pagedActivities" class="rounded-xl border border-green-100 p-3 text-sm text-green-800">
           <span class="font-medium">{{ act.user_name }}</span>
           <span class="text-xs text-green-700">({{ act.user_email }})</span>
           <span> - {{ act.activity_type }}</span>
         </div>
-        <p *ngIf="!activities.length" class="text-sm text-green-700">No activities yet.</p>
+        <p *ngIf="!activities.length" class="text-sm text-green-700">{{ isSwahili ? 'Hakuna matendo' : 'No activities yet.' }}</p>
 
         <div *ngIf="activities.length > activitiesPerPage" class="flex items-center justify-between rounded-xl border border-green-100 bg-green-50 px-3 py-2">
           <button

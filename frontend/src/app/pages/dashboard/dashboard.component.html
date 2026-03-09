@@ -246,13 +246,13 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <button (click)="startEditAd(ad)" class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-green-50">
+                <button type="button" (click)="startEditAd(ad, $event)" class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-green-50">
                   <span class="inline-flex items-center gap-1">
                     <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>
                     {{ isSwahili ? 'Hariri' : 'Edit' }}
                   </span>
                 </button>
-                <button (click)="deleteAd(ad.id)" class="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50">
+                <button type="button" (click)="deleteAd(ad, $event)" class="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50">
                   <span class="inline-flex items-center gap-1">
                     <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6M14 11v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
                     {{ isSwahili ? 'Futa' : 'Delete' }}
@@ -484,3 +484,89 @@
     </main>
   </div>
 </div>
+
+  <div
+    *ngIf="showMaterialDeleteDialog"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+      <h3 class="text-lg font-semibold text-green-900">
+        {{ isSwahili ? 'Thibitisha kufuta material' : 'Confirm delete material' }}
+      </h3>
+      <p class="mt-2 text-sm text-green-700">
+        {{
+          isSwahili
+            ? 'Una hakika unataka kufuta material hii? Hii haiwezi kufanywa tena.'
+            : 'Are you sure you want to delete this material? This cannot be undone.'
+        }}
+      </p>
+      <p class="mt-1 text-sm font-semibold text-green-800">
+        {{ pendingMaterialToDelete?.original_name }}
+      </p>
+      <div class="mt-4 flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelMaterialDelete()"
+          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+        >
+          {{ isSwahili ? 'Katiza' : 'Cancel' }}
+        </button>
+        <button
+          type="button"
+          (click)="confirmMaterialDeletion()"
+          [disabled]="materialDeletingId === pendingMaterialToDelete?.id"
+          class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-60"
+        >
+          <span *ngIf="materialDeletingId !== pendingMaterialToDelete?.id">
+            {{ isSwahili ? 'Futa' : 'Delete' }}
+          </span>
+          <span *ngIf="materialDeletingId === pendingMaterialToDelete?.id">
+            {{ isSwahili ? 'Inafutwa...' : 'Deleting...' }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showAdDeleteDialog"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+      <h3 class="text-lg font-semibold text-green-900">
+        {{ isSwahili ? 'Thibitisha kufuta tangazo' : 'Confirm delete ad' }}
+      </h3>
+      <p class="mt-2 text-sm text-green-700">
+        {{
+          isSwahili
+            ? 'Una uhakika unataka kufuta tangazo hili? Huwezi kurudisha baada ya kufuta.'
+            : 'Are you sure you want to delete this ad? This action cannot be undone.'
+        }}
+      </p>
+      <p *ngIf="pendingAdToDelete?.title" class="mt-1 text-sm font-semibold text-green-800">
+        {{ pendingAdToDelete?.title }}
+      </p>
+      <div class="mt-4 flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          (click)="cancelAdDelete()"
+          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+        >
+          {{ isSwahili ? 'Katiza' : 'Cancel' }}
+        </button>
+        <button
+          type="button"
+          (click)="confirmAdDeletion()"
+          [disabled]="adDeletingId === pendingAdToDelete?.id"
+          class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-60"
+        >
+          <span *ngIf="adDeletingId !== pendingAdToDelete?.id">
+            {{ isSwahili ? 'Futa' : 'Delete' }}
+          </span>
+          <span *ngIf="adDeletingId === pendingAdToDelete?.id">
+            {{ isSwahili ? 'Inafutwa...' : 'Deleting...' }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>

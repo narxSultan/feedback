@@ -72,6 +72,9 @@ export class UserDashboardPageComponent implements OnInit {
     originalName: '',
     category: 'presentation'
   };
+  pendingMaterialToDelete: EventMaterial | null = null;
+  showMaterialDeleteDialog = false;
+  materialDeletingId: number | null = null;
 
   eventForm = {
     title: '',
@@ -326,21 +329,40 @@ export class UserDashboardPageComponent implements OnInit {
     if (!this.selectedMaterialEvent) {
       return;
     }
-    if (!confirm('Are you sure you want to delete this material?')) {
+    this.pendingMaterialToDelete = material;
+    this.showMaterialDeleteDialog = true;
+  }
+
+  confirmDeleteMaterial() {
+    if (!this.selectedMaterialEvent || !this.pendingMaterialToDelete) {
+      this.resetMaterialDeleteDialog();
       return;
     }
-    this.eventsService.deleteEventMaterial(this.selectedMaterialEvent.id, material.id).subscribe({
+    this.materialDeletingId = this.pendingMaterialToDelete.id;
+    this.eventsService.deleteEventMaterial(this.selectedMaterialEvent.id, this.pendingMaterialToDelete.id).subscribe({
       next: () => {
-        this.eventMaterials = this.eventMaterials.filter((item) => item.id !== material.id);
+        this.eventMaterials = this.eventMaterials.filter((item) => item.id !== this.pendingMaterialToDelete?.id);
         this.materialsMessage = 'Material deleted';
-        if (this.editingMaterialId === material.id) {
+        if (this.editingMaterialId === this.pendingMaterialToDelete?.id) {
           this.cancelMaterialEdit();
         }
+        this.resetMaterialDeleteDialog();
       },
       error: (error) => {
         this.materialsMessage = error?.error?.message || 'Failed to delete material';
+        this.resetMaterialDeleteDialog();
       }
     });
+  }
+
+  cancelDeleteMaterial() {
+    this.resetMaterialDeleteDialog();
+  }
+
+  private resetMaterialDeleteDialog() {
+    this.pendingMaterialToDelete = null;
+    this.showMaterialDeleteDialog = false;
+    this.materialDeletingId = null;
   }
 
   downloadMaterial(material: EventMaterial) {

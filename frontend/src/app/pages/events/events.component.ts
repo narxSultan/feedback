@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { EventsService } from '../../core/services/events.service';
+import { LanguageService } from '../../core/services/language.service';
 import { EventFeedbackQuestion, EventItem } from '../../core/models/types';
 
 @Component({
@@ -12,7 +13,7 @@ import { EventFeedbackQuestion, EventItem } from '../../core/models/types';
   templateUrl: './events.component.html'
 })
 export class EventsPageComponent implements OnInit {
-  showCreateForm = true;
+  showCreateForm = false;
   events: EventItem[] = [];
   message = '';
   selectedImageFile: File | null = null;
@@ -41,6 +42,9 @@ export class EventsPageComponent implements OnInit {
   toastType: 'success' | 'error' = 'success';
   showToastOverlay = false;
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
+  pendingDeleteEvent: EventItem | null = null;
+  showDeleteDialog = false;
+  deletingEventId: number | null = null;
 
   form = {
     title: '',
@@ -53,13 +57,30 @@ export class EventsPageComponent implements OnInit {
 
   constructor(
     private eventsService: EventsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private languageService: LanguageService
   ) {}
+
+  toggleLanguage() {
+    this.languageService.toggleLanguage();
+  }
+
+  get isSwahili(): boolean {
+    return this.languageService.isSwahili;
+  }
 
   ngOnInit(): void {
     const mode = String(this.route.snapshot.queryParamMap.get('mode') || '').toLowerCase();
-    this.showCreateForm = mode !== 'list';
+    this.showCreateForm = mode === 'create';
     this.loadEvents();
+  }
+
+  openCreateForm() {
+    this.showCreateForm = true;
+  }
+
+  closeCreateForm() {
+    this.showCreateForm = false;
   }
 
   loadEvents() {
@@ -99,12 +120,13 @@ export class EventsPageComponent implements OnInit {
           this.customQuestions = [];
           this.questionForm = { label: '', type: 'text', required: false, optionsText: '' };
           this.selectedImageFile = null;
-          this.generatedCode = event.event_code;
-          this.generatedEventId = event.id;
-          this.generatedEventTitle = event.title || 'event';
-          this.message = 'Event created successfully.';
-          this.showToast('Event created successfully.', 'success');
-        },
+        this.generatedCode = event.event_code;
+        this.generatedEventId = event.id;
+        this.generatedEventTitle = event.title || 'event';
+        this.message = 'Event created successfully.';
+        this.showToast('Event created successfully.', 'success');
+        this.showCreateForm = false;
+      },
         error: (error) => {
           this.message = error?.error?.message || 'Failed to create event.';
           this.showToast(this.message, 'error');
@@ -264,25 +286,42 @@ export class EventsPageComponent implements OnInit {
   }
 
   deleteEvent(event: EventItem) {
-    const confirmed = window.confirm(`Delete event "${event.title}"? This will remove all related feedback.`);
-    if (!confirmed) {
+    this.pendingDeleteEvent = event;
+    this.showDeleteDialog = true;
+  }
+
+  confirmDeleteEvent() {
+    if (!this.pendingDeleteEvent) {
       return;
     }
-
-    this.eventsService.deleteEvent(event.id).subscribe({
+    const target = this.pendingDeleteEvent;
+    this.deletingEventId = target.id;
+    this.eventsService.deleteEvent(target.id).subscribe({
       next: () => {
-        this.events = this.events.filter((item) => item.id !== event.id);
-        if (this.editingEventId === event.id) {
+        this.events = this.events.filter((item) => item.id !== target.id);
+        if (this.editingEventId === target.id) {
           this.cancelEdit();
         }
         this.message = 'Event deleted successfully.';
         this.showToast('Event deleted successfully.', 'success');
+        this.resetDeleteDialog();
       },
       error: (error) => {
         this.message = error?.error?.message || 'Failed to delete event.';
         this.showToast(this.message, 'error');
+        this.resetDeleteDialog();
       }
     });
+  }
+
+  cancelDeleteEvent() {
+    this.resetDeleteDialog();
+  }
+
+  private resetDeleteDialog() {
+    this.pendingDeleteEvent = null;
+    this.showDeleteDialog = false;
+    this.deletingEventId = null;
   }
 
   downloadGeneratedEventPdf() {

@@ -14,6 +14,7 @@ export class UserLoginPageComponent {
   email = '';
   password = '';
   message = '';
+  showPassword = false;
 
   constructor(private auth: UserAuthService, private router: Router) {}
 
@@ -31,5 +32,9 @@ export class UserLoginPageComponent {
         this.message = error?.error?.message || 'Login failed';
       }
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

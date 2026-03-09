@@ -6,6 +6,7 @@ import { FeedbackService } from '../../core/services/feedback.service';
 import { EventsService } from '../../core/services/events.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UserAuthService } from '../../core/services/user-auth.service';
+import { LanguageService } from '../../core/services/language.service';
 import { EventFeedbackQuestion, EventItem, EventMaterial } from '../../core/models/types';
 
 @Component({
@@ -15,7 +16,6 @@ import { EventFeedbackQuestion, EventItem, EventMaterial } from '../../core/mode
   templateUrl: './landing.component.html'
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
-  isSwahili = false;
   isAdminViewer = false;
   eventCode = '';
   eventInfo: EventItem | null = null;
@@ -58,11 +58,16 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   feedbackMessage = '';
 
+  get isSwahili(): boolean {
+    return this.languageService.isSwahili;
+  }
+
   constructor(
     private feedbackService: FeedbackService,
     private eventsService: EventsService,
     private authService: AuthService,
     private userAuthService: UserAuthService,
+    private languageService: LanguageService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -107,7 +112,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   toggleLanguage() {
-    this.isSwahili = !this.isSwahili;
+    this.languageService.toggleLanguage();
   }
 
   ngOnDestroy() {
