@@ -21,7 +21,28 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   eventLookupMessage = '';
   private codeLookupTimeout: ReturnType<typeof setTimeout> | null = null;
   private slideTimer: ReturnType<typeof setInterval> | null = null;
-  activeSlide = 0;
+  activeSlide = 0;activePanel: string = 'image';
+eventMaterials: any[] = [];
+canUploadMaterials = false;
+selectedMaterialFile: File | null = null;
+selectedMaterialCategory = '';
+isUploadingMaterial = false;
+materialsUploadMessage = '';
+materialsLoading = false;
+materialsError = '';
+isDownloadingMaterialsZip = false;
+
+submitMaterialUpload(event: any) {}
+isUserOrAdminLoggedIn = false;
+onMaterialFileSelected(event: any) {}
+
+downloadMaterial(material: any) {}
+
+downloadAllMaterials() {}
+
+formatMaterialCategory(category: string) {
+  return category;
+}
   defaultSlides: Array<{ id?: number; title: string; image: string; description?: string; eventCode?: string; targetUrl?: string; slideType?: 'event' | 'ad' | 'default' }> = [
     {
       title: 'Conference',
