@@ -13,6 +13,8 @@ const {
   getEventMaterials,
   uploadEventMaterial,
   downloadEventMaterialsZip,
+  updateEventMaterial,
+  deleteEventMaterial,
 } = require('../controllers/eventsController');
 const { authMiddleware, requireAdmin } = require('../middleware/authMiddleware');
 const { eventImageUpload, materialUpload } = require('../middleware/uploadMiddleware');
@@ -24,6 +26,8 @@ router.get('/ad/:adId', getPublicAdById);
 router.get('/public', getPublicEventSlides);
 router.get('/:eventId/materials', getEventMaterials);
 router.get('/:eventId/materials/zip', downloadEventMaterialsZip);
+router.put('/:eventId/materials/:materialId', authMiddleware, updateEventMaterial);
+router.delete('/:eventId/materials/:materialId', authMiddleware, deleteEventMaterial);
 router.get('/:eventId/code-pdf', authMiddleware, downloadEventCodePdf);
 router.get('/', authMiddleware, requireAdmin, getEvents);
 router.post('/', authMiddleware, requireAdmin, createEvent);

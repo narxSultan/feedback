@@ -74,6 +74,28 @@ async function loadEventForMaterials(eventId) {
   return result.rows[0] || null;
 }
 
+async function loadEventMaterial(eventId, materialId) {
+  const result = await pool.query(
+    `SELECT *
+     FROM event_materials
+     WHERE id = $1
+       AND event_id = $2
+     LIMIT 1`,
+    [materialId, eventId]
+  );
+  return result.rows[0] || null;
+}
+
+function actorCanManageMaterial(actor, material) {
+  if (!actor || !material) {
+    return false;
+  }
+  if (actor.role === 'admin') {
+    return true;
+  }
+  return actor.role === 'user' && material.uploader_type === 'user' && Number(material.uploader_id) === Number(actor.id);
+}
+
 async function getEvents(req, res, next) {
   try {
     const result = await pool.query(
@@ -414,10 +436,6 @@ async function getEventMaterials(req, res, next) {
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    if (event.is_expired) {
-      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
-    }
-
     const materialsResult = await pool.query(
       `SELECT id, event_id, uploader_type, uploader_id, original_name, filename, mime_type, category, file_url, created_at
        FROM event_materials
@@ -452,10 +470,6 @@ async function uploadEventMaterial(req, res, next) {
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    if (event.is_expired) {
-      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
-    }
-
     if (actor.role === 'user' && Number(event.created_by_user) !== Number(actor.id)) {
       return res.status(403).json({ message: 'You can only upload materials to your own events' });
     }
@@ -491,6 +505,95 @@ async function uploadEventMaterial(req, res, next) {
   }
 }
 
+async function updateEventMaterial(req, res, next) {
+  try {
+    const { eventId, materialId } = req.params;
+    const actor = req.actor;
+
+    if (!actor) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const event = await loadEventForMaterials(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    if (event.is_expired) {
+      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
+    }
+
+    const material = await loadEventMaterial(eventId, materialId);
+    if (!material) {
+      return res.status(404).json({ message: 'Material not found' });
+    }
+
+    if (!actorCanManageMaterial(actor, material)) {
+      return res.status(403).json({ message: 'You cannot modify this material' });
+    }
+
+    const newOriginalName = String(req.body.original_name || '').trim() || material.original_name;
+    const newCategory = sanitizeMaterialCategory(req.body.category || material.category);
+
+    const updateResult = await pool.query(
+      `UPDATE event_materials
+       SET original_name = $1,
+           category = $2
+       WHERE id = $3
+       RETURNING id, event_id, uploader_type, uploader_id, original_name, filename, mime_type, category, file_url, created_at`,
+      [newOriginalName, newCategory, materialId]
+    );
+
+    return res.json(updateResult.rows[0]);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function deleteEventMaterial(req, res, next) {
+  try {
+    const { eventId, materialId } = req.params;
+    const actor = req.actor;
+
+    if (!actor) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const event = await loadEventForMaterials(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    if (event.is_expired) {
+      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
+    }
+
+    const material = await loadEventMaterial(eventId, materialId);
+    if (!material) {
+      return res.status(404).json({ message: 'Material not found' });
+    }
+
+    if (!actorCanManageMaterial(actor, material)) {
+      return res.status(403).json({ message: 'You cannot delete this material' });
+    }
+
+    const deleteResult = await pool.query(
+      `DELETE FROM event_materials
+       WHERE id = $1
+       RETURNING filename`,
+      [materialId]
+    );
+
+    const removed = deleteResult.rows[0];
+    if (removed?.filename) {
+      const filePath = path.join(uploadsDir, removed.filename);
+      fs.unlink(filePath, () => {});
+    }
+
+    return res.json({ message: 'Material deleted' });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function downloadEventMaterialsZip(req, res, next) {
   try {
     const { eventId } = req.params;
@@ -498,10 +601,6 @@ async function downloadEventMaterialsZip(req, res, next) {
 
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
-    }
-
-    if (event.is_expired) {
-      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
     }
 
     const idsParam = String(req.query.ids || '').split(',').map((value) => parseInt(value.trim(), 10)).filter((value) => Number.isInteger(value) && value > 0);
@@ -659,4 +758,6 @@ module.exports = {
   getEventMaterials,
   uploadEventMaterial,
   downloadEventMaterialsZip,
+  updateEventMaterial,
+  deleteEventMaterial,
 };
