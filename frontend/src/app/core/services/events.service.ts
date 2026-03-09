@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ApiBaseService } from './api-base.service';
 import { AuthService } from './auth.service';
-import { EventItem, EventPayload } from '../models/types';
+import { UserAuthService } from './user-auth.service';
+import { EventItem, EventPayload, EventMaterialsResponse, EventMaterial } from '../models/types';
 
 @Injectable({ providedIn: 'root' })
 export class EventsService {
   constructor(
     private http: HttpClient,
     private api: ApiBaseService,
-    private auth: AuthService
+    private auth: AuthService,
+    private userAuth: UserAuthService
   ) {}
 
   private authHeaders() {
+    const token = this.auth.getToken() || this.userAuth.getToken() || '';
     return new HttpHeaders({
-      Authorization: `Bearer ${this.auth.getToken() || ''}`
+      Authorization: `Bearer ${token}`
     });
   }
 
@@ -96,6 +99,34 @@ export class EventsService {
     return this.http.get(`${this.api.baseUrl}/events/${eventId}/code-pdf`, {
       headers: this.authHeaders(),
       responseType: 'blob'
+    });
+  }
+
+  getEventMaterials(eventId: number) {
+    return this.http.get<EventMaterialsResponse>(`${this.api.baseUrl}/events/${eventId}/materials`);
+  }
+
+  downloadEventMaterialsZip(eventId: number, ids?: number[]) {
+    const options: {
+      responseType: 'blob';
+      params?: HttpParams;
+    } = { responseType: 'blob' };
+
+    if (ids?.length) {
+      options.params = new HttpParams().set('ids', ids.join(','));
+    }
+
+    return this.http.get(`${this.api.baseUrl}/events/${eventId}/materials/zip`, options);
+  }
+
+  uploadEventMaterial(eventId: number, file: File, category?: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (category) {
+      formData.append('category', category);
+    }
+    return this.http.post<EventMaterial>(`${this.api.baseUrl}/events/${eventId}/materials`, formData, {
+      headers: this.authHeaders()
     });
   }
 }

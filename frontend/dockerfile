@@ -1,0 +1,5 @@
+# Dockerfile
+# Hardened runtime image with significantly lower CVE surface than Docker Hub alpine nginx.
+FROM cgr.dev/chainguard/nginx:latest
+COPY dist/feedback-system /usr/share/nginx/html
+EXPOSE 8080

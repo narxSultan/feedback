@@ -28,6 +28,28 @@ export interface EventItem {
   created_at: string;
 }
 
+export interface EventMaterial {
+  id: number;
+  event_id: number;
+  uploader_type: 'admin' | 'user';
+  uploader_id?: number;
+  original_name: string;
+  filename: string;
+  mime_type: string;
+  category: 'presentation' | 'video' | 'audio' | 'document' | 'other';
+  file_url: string;
+  created_at: string;
+}
+
+export interface EventMaterialsResponse {
+  event: {
+    id: number;
+    title?: string;
+    event_code: string;
+  };
+  materials: EventMaterial[];
+}
+
 export interface EventFeedbackQuestion {
   id: string;
   label: string;

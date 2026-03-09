@@ -1,5 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { spawn } = require('child_process');
+
 const pool = require('../config/db');
 const { generateEventCode } = require('../utils/codeGenerator');
+
+const uploadsDir = path.join(__dirname, '../uploads');
 
 function normalizeFormSchema(input) {
   if (!input || typeof input !== 'object') {
@@ -40,6 +47,31 @@ function normalizeFormSchema(input) {
     version: 1,
     questions: normalized,
   };
+}
+
+const allowedMaterialCategories = new Set(['presentation', 'video', 'audio', 'document', 'other']);
+
+function sanitizeMaterialCategory(input) {
+  const candidate = String(input || '').trim().toLowerCase();
+  return allowedMaterialCategories.has(candidate) ? candidate : 'other';
+}
+
+async function loadEventForMaterials(eventId) {
+  const result = await pool.query(
+    `SELECT
+       id,
+       title,
+       event_code,
+       created_by,
+       created_by_user,
+       end_date,
+       (end_date IS NOT NULL AND end_date < CURRENT_DATE) AS is_expired
+     FROM events
+     WHERE id = $1
+     LIMIT 1`,
+    [eventId]
+  );
+  return result.rows[0] || null;
 }
 
 async function getEvents(req, res, next) {
@@ -375,6 +407,163 @@ async function getEventByCode(req, res, next) {
   }
 }
 
+async function getEventMaterials(req, res, next) {
+  try {
+    const { eventId } = req.params;
+    const event = await loadEventForMaterials(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    if (event.is_expired) {
+      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
+    }
+
+    const materialsResult = await pool.query(
+      `SELECT id, event_id, uploader_type, uploader_id, original_name, filename, mime_type, category, file_url, created_at
+       FROM event_materials
+       WHERE event_id = $1
+       ORDER BY created_at DESC`,
+      [eventId]
+    );
+
+    return res.json({
+      event: {
+        id: event.id,
+        title: event.title,
+        event_code: event.event_code,
+      },
+      materials: materialsResult.rows,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function uploadEventMaterial(req, res, next) {
+  try {
+    const { eventId } = req.params;
+    const actor = req.actor;
+
+    if (!actor) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const event = await loadEventForMaterials(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    if (event.is_expired) {
+      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
+    }
+
+    if (actor.role === 'user' && Number(event.created_by_user) !== Number(actor.id)) {
+      return res.status(403).json({ message: 'You can only upload materials to your own events' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'Material file is required' });
+    }
+
+    const uploaderType = actor.role === 'admin' ? 'admin' : 'user';
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+    const category = sanitizeMaterialCategory(req.body.category);
+
+    const insertResult = await pool.query(
+      `INSERT INTO event_materials (event_id, uploader_type, uploader_id, original_name, filename, mime_type, category, file_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, event_id, uploader_type, uploader_id, original_name, filename, mime_type, category, file_url, created_at`,
+      [
+        eventId,
+        uploaderType,
+        actor.id,
+        req.file.originalname || req.file.filename,
+        req.file.filename,
+        req.file.mimetype,
+        category,
+        fileUrl,
+      ]
+    );
+
+    return res.status(201).json(insertResult.rows[0]);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function downloadEventMaterialsZip(req, res, next) {
+  try {
+    const { eventId } = req.params;
+    const event = await loadEventForMaterials(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    if (event.is_expired) {
+      return res.status(410).json({ message: 'Event hiyo imekwisha muda wake.' });
+    }
+
+    const idsParam = String(req.query.ids || '').split(',').map((value) => parseInt(value.trim(), 10)).filter((value) => Number.isInteger(value) && value > 0);
+    const uniqueIds = Array.from(new Set(idsParam));
+
+    let queryText = `SELECT id, original_name, filename FROM event_materials WHERE event_id = $1`;
+    const queryParams = [eventId];
+    if (uniqueIds.length) {
+      queryText += ` AND id = ANY($2::int[])`;
+      queryParams.push(uniqueIds);
+    }
+    queryText += ` ORDER BY created_at ASC`;
+
+    const materialsResult = await pool.query(queryText, queryParams);
+    const materials = materialsResult.rows;
+
+    if (!materials.length) {
+      return res.status(404).json({ message: 'No event materials found for download' });
+    }
+
+    const safeTitle = (event.title || event.event_code || 'event-materials').replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'event-materials';
+    const zipFilename = `${safeTitle}.zip`;
+
+    const availableFiles = materials
+      .map((material) => ({
+        path: path.join(uploadsDir, material.filename),
+        name: material.original_name || path.basename(material.filename),
+      }))
+      .filter((item) => fs.existsSync(item.path));
+
+    if (!availableFiles.length) {
+      return res.status(404).json({ message: 'Event materials files are missing from server storage' });
+    }
+
+    const tempZipPath = path.join(os.tmpdir(), `event-materials-${event.id}-${Date.now()}-${Math.round(Math.random() * 1e9)}.zip`);
+    const zipArgs = ['-j', tempZipPath, ...availableFiles.map((item) => item.path)];
+
+    const zipProcess = spawn('zip', zipArgs, { stdio: 'ignore' });
+    zipProcess.on('error', (zipErr) => next(zipErr));
+    zipProcess.on('close', (code) => {
+      if (code !== 0) {
+        return next(new Error('Failed to create ZIP archive'));
+      }
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename="${zipFilename}"`);
+
+      const zipStream = fs.createReadStream(tempZipPath);
+      zipStream.on('error', (streamErr) => {
+        fs.unlink(tempZipPath, () => {});
+        next(streamErr);
+      });
+      zipStream.on('end', () => {
+        fs.unlink(tempZipPath, () => {});
+      });
+      zipStream.pipe(res);
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 function uploadEventImage(req, res) {
   if (!req.file) {
     return res.status(400).json({ message: 'Image file is required' });
@@ -467,4 +656,7 @@ module.exports = {
   getPublicAdById,
   uploadEventImage,
   downloadEventCodePdf,
+  getEventMaterials,
+  uploadEventMaterial,
+  downloadEventMaterialsZip,
 };

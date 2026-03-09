@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UserAuthService } from '../../core/services/user-auth.service';
 import { UserDashboardService } from '../../core/services/user-dashboard.service';
-import { EventFeedbackQuestion, EventItem, UserFeedbackHistoryItem, UserPayment, UserProfile } from '../../core/models/types';
+import { EventsService } from '../../core/services/events.service';
+import { EventFeedbackQuestion, EventItem, EventMaterial, UserFeedbackHistoryItem, UserPayment, UserProfile } from '../../core/models/types';
 
 @Component({
   selector: 'app-user-dashboard-page',
@@ -21,7 +22,8 @@ export class UserDashboardPageComponent implements OnInit {
     | 'security'
     | 'events-feedback'
     | 'feedback-history'
-    | 'payments-history' = 'overview';
+    | 'payments-history'
+    | 'materials' = 'overview';
   events: EventItem[] = [];
   payments: UserPayment[] = [];
   feedbackHistory: UserFeedbackHistoryItem[] = [];
@@ -57,6 +59,14 @@ export class UserDashboardPageComponent implements OnInit {
     newPassword: '',
     confirmNewPassword: ''
   };
+  materialsSearchTerm = '';
+  selectedMaterialEvent: EventItem | null = null;
+  selectedMaterialFile: File | null = null;
+  selectedMaterialCategory = 'presentation';
+  eventMaterials: EventMaterial[] = [];
+  materialsLoading = false;
+  materialsMessage = '';
+  isUploadingMaterial = false;
 
   eventForm = {
     title: '',
@@ -94,7 +104,11 @@ export class UserDashboardPageComponent implements OnInit {
     yearly: 150000,
   };
 
-  constructor(private auth: UserAuthService, private dashboard: UserDashboardService) {}
+  constructor(
+    private auth: UserAuthService,
+    private dashboard: UserDashboardService,
+    private eventsService: EventsService
+  ) {}
 
   get userName() {
     return this.auth.getUserName();
@@ -164,6 +178,9 @@ export class UserDashboardPageComponent implements OnInit {
   }
 
   setActiveSection(section: UserDashboardPageComponent['activeSection']) {
+    if (this.activeSection === 'materials' && section !== 'materials') {
+      this.resetMaterialsSection();
+    }
     this.activeSection = section;
   }
 
@@ -183,6 +200,97 @@ export class UserDashboardPageComponent implements OnInit {
         this.message = error?.error?.message || 'Failed to load dashboard';
       }
     });
+  }
+
+  get filteredMaterialsEvents() {
+    const term = this.materialsSearchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.events;
+    }
+    return this.events.filter((event) => {
+      const title = (event.title || '').toLowerCase();
+      const code = (event.event_code || '').toLowerCase();
+      return title.includes(term) || code.includes(term);
+    });
+  }
+
+  selectMaterialEvent(event: EventItem) {
+    this.selectedMaterialEvent = event;
+    this.selectedMaterialFile = null;
+    this.materialsMessage = '';
+    this.loadSelectedEventMaterials(event.id);
+  }
+
+  loadSelectedEventMaterials(eventId: number) {
+    this.materialsLoading = true;
+    this.eventMaterials = [];
+    this.eventsService.getEventMaterials(eventId).subscribe({
+      next: (response) => {
+        this.eventMaterials = response.materials || [];
+        this.materialsLoading = false;
+      },
+      error: (error) => {
+        this.materialsLoading = false;
+        this.materialsMessage = error?.error?.message || 'Failed to load materials.';
+      }
+    });
+  }
+
+  onMaterialFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.selectedMaterialFile = input.files?.[0] || null;
+  }
+
+  uploadSelectedEventMaterial(event: Event) {
+    event.preventDefault();
+    if (!this.selectedMaterialEvent) {
+      this.materialsMessage = 'Select an event first';
+      return;
+    }
+    if (!this.selectedMaterialFile) {
+      this.materialsMessage = 'Choose a file first';
+      return;
+    }
+
+    this.isUploadingMaterial = true;
+    this.eventsService.uploadEventMaterial(
+      this.selectedMaterialEvent.id,
+      this.selectedMaterialFile,
+      this.selectedMaterialCategory
+    ).subscribe({
+      next: (material) => {
+        this.eventMaterials = [material, ...this.eventMaterials];
+        this.materialsMessage = 'Material uploaded';
+        this.selectedMaterialFile = null;
+        this.isUploadingMaterial = false;
+      },
+      error: (error) => {
+        this.isUploadingMaterial = false;
+        this.materialsMessage = error?.error?.message || 'Failed to upload material.';
+      }
+    });
+  }
+
+  downloadMaterial(material: EventMaterial) {
+    if (!material.file_url) {
+      return;
+    }
+    const anchor = document.createElement('a');
+    anchor.href = material.file_url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.click();
+  }
+
+  resetMaterialsSection() {
+    this.selectedMaterialEvent = null;
+    this.selectedMaterialFile = null;
+    this.eventMaterials = [];
+    this.materialsLoading = false;
+    this.materialsMessage = '';
+    this.isUploadingMaterial = false;
+    this.materialsSearchTerm = '';
+    this.selectedMaterialCategory = 'presentation';
   }
 
   loadFeedbackHistory() {

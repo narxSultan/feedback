@@ -5,7 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AdminService } from '../../core/services/admin.service';
 import { EventsService } from '../../core/services/events.service';
-import { EventItem } from '../../core/models/types';
+import { EventItem, EventMaterial } from '../../core/models/types';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -14,7 +14,7 @@ import { EventItem } from '../../core/models/types';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardPageComponent {
-  activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' = 'overview';
+  activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials' = 'overview';
   isSwahili = false;
   searchTerm = '';
   feedbacks: any[] = [];
@@ -52,6 +52,14 @@ export class DashboardPageComponent {
     newPassword: '',
     confirmNewPassword: ''
   };
+  materialsSearchTerm = '';
+  selectedMaterialEvent: EventItem | null = null;
+  selectedMaterialFile: File | null = null;
+  selectedMaterialCategory = 'presentation';
+  eventMaterials: EventMaterial[] = [];
+  materialsLoading = false;
+  materialsMessage = '';
+  isUploadingMaterial = false;
 
   constructor(
     private authService: AuthService,
@@ -77,7 +85,10 @@ export class DashboardPageComponent {
     this.isSwahili = !this.isSwahili;
   }
 
-  setActiveSection(section: 'overview' | 'feedback' | 'ads' | 'security' | 'actions') {
+  setActiveSection(section: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials') {
+    if (this.activeSection === 'materials' && section !== 'materials') {
+      this.resetMaterialsSection();
+    }
     this.activeSection = section;
     if (section === 'ads') {
       this.loadAds();
@@ -136,6 +147,98 @@ export class DashboardPageComponent {
         this.events = [];
       }
     });
+  }
+
+  get filteredMaterialsEvents() {
+    const term = this.materialsSearchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.events;
+    }
+    return this.events.filter((event) => {
+      const title = (event.title || '').toLowerCase();
+      const code = (event.event_code || '').toLowerCase();
+      return title.includes(term) || code.includes(term);
+    });
+  }
+
+  selectMaterialEvent(event: EventItem) {
+    this.selectedMaterialEvent = event;
+    this.selectedMaterialFile = null;
+    this.materialsMessage = '';
+    this.loadSelectedEventMaterials(event.id);
+  }
+
+  loadSelectedEventMaterials(eventId: number) {
+    this.materialsLoading = true;
+    this.eventMaterials = [];
+    this.materialsMessage = '';
+    this.eventsService.getEventMaterials(eventId).subscribe({
+      next: (response) => {
+        this.eventMaterials = response.materials || [];
+        this.materialsLoading = false;
+      },
+      error: (error) => {
+        this.materialsLoading = false;
+        this.materialsMessage = error?.error?.message || 'Failed to load materials.';
+      }
+    });
+  }
+
+  onMaterialFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.selectedMaterialFile = input.files?.[0] || null;
+  }
+
+  uploadSelectedEventMaterial(event: Event) {
+    event.preventDefault();
+    if (!this.selectedMaterialEvent) {
+      this.materialsMessage = this.isSwahili ? 'Chagua event kwanza' : 'Select an event first';
+      return;
+    }
+    if (!this.selectedMaterialFile) {
+      this.materialsMessage = this.isSwahili ? 'Chagua faili kwanza' : 'Choose a file first';
+      return;
+    }
+
+    this.isUploadingMaterial = true;
+    this.eventsService.uploadEventMaterial(
+      this.selectedMaterialEvent.id,
+      this.selectedMaterialFile,
+      this.selectedMaterialCategory
+    ).subscribe({
+      next: (material) => {
+        this.eventMaterials = [material, ...this.eventMaterials];
+        this.materialsMessage = this.isSwahili ? 'Material imepakiwa' : 'Material uploaded';
+        this.selectedMaterialFile = null;
+        this.isUploadingMaterial = false;
+      },
+      error: (error) => {
+        this.isUploadingMaterial = false;
+        this.materialsMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kupakia material.' : 'Failed to upload material.');
+      }
+    });
+  }
+
+  downloadMaterial(material: EventMaterial) {
+    if (!material.file_url) {
+      return;
+    }
+    const anchor = document.createElement('a');
+    anchor.href = material.file_url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.click();
+  }
+
+  resetMaterialsSection() {
+    this.selectedMaterialEvent = null;
+    this.selectedMaterialFile = null;
+    this.eventMaterials = [];
+    this.materialsLoading = false;
+    this.materialsMessage = '';
+    this.isUploadingMaterial = false;
+    this.materialsSearchTerm = '';
+    this.selectedMaterialCategory = 'presentation';
   }
 
   onAdImageSelected(event: Event) {

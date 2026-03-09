@@ -1,11 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { EventsService } from '../../core/services/events.service';
 import { AuthService } from '../../core/services/auth.service';
-import { EventFeedbackQuestion, EventItem } from '../../core/models/types';
+import { UserAuthService } from '../../core/services/user-auth.service';
+import { EventFeedbackQuestion, EventItem, EventMaterial } from '../../core/models/types';
 
 @Component({
   selector: 'app-landing-page',
@@ -19,6 +20,16 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   eventCode = '';
   eventInfo: EventItem | null = null;
   eventLookupMessage = '';
+  eventMaterials: EventMaterial[] = [];
+  materialsLoading = false;
+  materialsError = '';
+  isDownloadingMaterialsZip = false;
+  selectedMaterialFile: File | null = null;
+  selectedMaterialCategory = 'presentation';
+  materialsUploadMessage = '';
+  isUploadingMaterial = false;
+  activePanel: 'image' | 'materials' = 'image';
+  @ViewChild('materialFileInput') materialFileInput?: ElementRef<HTMLInputElement>;
   private codeLookupTimeout: ReturnType<typeof setTimeout> | null = null;
   private slideTimer: ReturnType<typeof setInterval> | null = null;
   activeSlide = 0;
@@ -55,6 +66,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     private feedbackService: FeedbackService,
     private eventsService: EventsService,
     private authService: AuthService,
+    private userAuthService: UserAuthService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -123,6 +135,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     return this.authService.isAuthenticated() && this.authService.isAdmin();
   }
 
+  get isUserOrAdminLoggedIn(): boolean {
+    return this.isAdminLoggedIn || this.userAuthService.isAuthenticated();
+  }
+
   get heroTitle(): string {
     if (this.eventInfo?.title) {
       return this.eventInfo.title;
@@ -134,6 +150,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.eventCode = value.toUpperCase();
     this.eventInfo = null;
     this.eventLookupMessage = '';
+    this.resetMaterials();
     this.customAnswers = {};
     this.questionPage = 0;
 
@@ -148,11 +165,13 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
     this.codeLookupTimeout = setTimeout(() => {
       this.eventsService.getEventByCode(trimmed).subscribe({
-        next: (event) => {
-          this.eventInfo = event;
-          this.eventLookupMessage = '';
-          this.questionPage = 0;
-        },
+      next: (event) => {
+        this.eventInfo = event;
+        this.eventLookupMessage = '';
+        this.questionPage = 0;
+        this.activePanel = 'image';
+        this.loadEventMaterials(event.id);
+      },
         error: (error) => {
           this.eventInfo = null;
           this.eventLookupMessage = error?.error?.message || (this.isSwahili
@@ -164,7 +183,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   get showSlider(): boolean {
-    return !this.eventCode.trim();
+    return !this.eventInfo;
   }
 
   onSlideClick(slide: { id?: number; title: string; image: string; description?: string; eventCode?: string; targetUrl?: string; slideType?: 'event' | 'ad' | 'default' }) {
@@ -200,6 +219,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     if (slide.id) {
       this.router.navigateByUrl(`/ad-info/${slide.id}`);
     }
+  }
+
+  get canUploadMaterials(): boolean {
+    return !!this.eventInfo && !this.eventInfo.is_expired && (this.isAdminViewer || this.userAuthService.isAuthenticated());
   }
 
   get customQuestions(): EventFeedbackQuestion[] {
@@ -291,6 +314,122 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.feedbackMessage = error?.error?.message || 'Failed to submit feedback.';
       }
     });
+  }
+
+  private resetMaterials() {
+    this.eventMaterials = [];
+    this.materialsLoading = false;
+    this.materialsError = '';
+    this.isDownloadingMaterialsZip = false;
+    this.selectedMaterialFile = null;
+    this.selectedMaterialCategory = 'presentation';
+    this.materialsUploadMessage = '';
+    this.isUploadingMaterial = false;
+    if (this.materialFileInput) {
+      this.materialFileInput.nativeElement.value = '';
+    }
+  }
+
+  private loadEventMaterials(eventId: number) {
+    this.eventMaterials = [];
+    this.materialsLoading = true;
+    this.materialsError = '';
+
+    this.eventsService.getEventMaterials(eventId).subscribe({
+      next: (response) => {
+        this.eventMaterials = response.materials || [];
+        this.materialsLoading = false;
+      },
+      error: (error) => {
+        this.materialsLoading = false;
+        this.materialsError = error?.error?.message || (this.isSwahili ? 'Imeshindikana kupakia material za event.' : 'Failed to load event materials.');
+      }
+    });
+  }
+
+  downloadMaterial(material: EventMaterial) {
+    if (!material.file_url) {
+      return;
+    }
+
+    const anchor = document.createElement('a');
+    anchor.href = material.file_url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.click();
+  }
+
+  downloadAllMaterials() {
+    if (!this.eventInfo) {
+      return;
+    }
+
+    const downloadEventId = this.eventInfo.id;
+    this.isDownloadingMaterialsZip = true;
+    this.materialsError = '';
+
+    this.eventsService.downloadEventMaterialsZip(downloadEventId).subscribe({
+      next: (blob) => {
+        this.isDownloadingMaterialsZip = false;
+        const blobUrl = window.URL.createObjectURL(blob);
+        const downloadName = `${(this.eventInfo?.title || this.eventInfo?.event_code || 'event-materials')
+          .replace(/[^a-z0-9]+/gi, '-')
+          .replace(/^-+|-+$/g, '')
+          .toLowerCase() || 'event-materials'}-materials.zip`;
+
+        const anchor = document.createElement('a');
+        anchor.href = blobUrl;
+        anchor.download = downloadName;
+        anchor.click();
+        window.URL.revokeObjectURL(blobUrl);
+      },
+      error: (error) => {
+        this.isDownloadingMaterialsZip = false;
+        this.materialsError = error?.error?.message || (this.isSwahili ? 'Imeshindikana kupakua material zote.' : 'Failed to download materials.');
+      }
+    });
+  }
+
+  onMaterialFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.selectedMaterialFile = input.files?.[0] || null;
+  }
+
+  submitMaterialUpload(event: Event) {
+    event.preventDefault();
+
+    const currentEventId = this.eventInfo?.id;
+
+    if (!currentEventId || !this.selectedMaterialFile || this.isUploadingMaterial) {
+      return;
+    }
+
+    this.isUploadingMaterial = true;
+    this.materialsUploadMessage = '';
+
+    this.eventsService.uploadEventMaterial(currentEventId, this.selectedMaterialFile, this.selectedMaterialCategory).subscribe({
+      next: () => {
+        this.materialsUploadMessage = this.isSwahili ? 'Material imepakiwa.' : 'Material uploaded.';
+        this.selectedMaterialFile = null;
+        this.selectedMaterialCategory = 'presentation';
+        if (this.materialFileInput) {
+          this.materialFileInput.nativeElement.value = '';
+        }
+        this.isUploadingMaterial = false;
+        this.loadEventMaterials(currentEventId);
+      },
+      error: (error) => {
+        this.isUploadingMaterial = false;
+        this.materialsUploadMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kupakia material.' : 'Failed to upload material.');
+      }
+    });
+  }
+
+  formatMaterialCategory(category?: string): string {
+    if (!category) {
+      return 'Other';
+    }
+    return `${category.charAt(0).toUpperCase()}${category.slice(1)}`;
   }
 
 }
