@@ -18,6 +18,7 @@ export class UserRegisterPageComponent {
     organization: ''
   };
   message = '';
+  showPassword = false;
 
   constructor(private auth: UserAuthService, private router: Router) {}
 
@@ -29,5 +30,9 @@ export class UserRegisterPageComponent {
         this.message = error?.error?.message || 'Registration failed';
       }
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

@@ -60,6 +60,9 @@ export class UserDashboardPageComponent implements OnInit {
     newPassword: '',
     confirmNewPassword: ''
   };
+  showOldPassword = false;
+  showNewPassword = false;
+  showConfirmNewPassword = false;
   materialsSearchTerm = '';
   selectedMaterialEvent: EventItem | null = null;
   selectedMaterialFile: File | null = null;
@@ -798,6 +801,18 @@ export class UserDashboardPageComponent implements OnInit {
         this.showToast(this.message, 'error');
       }
     });
+  }
+
+  togglePasswordVisibility(field: 'old' | 'new' | 'confirm') {
+    if (field === 'old') {
+      this.showOldPassword = !this.showOldPassword;
+      return;
+    }
+    if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+      return;
+    }
+    this.showConfirmNewPassword = !this.showConfirmNewPassword;
   }
 
   paySubscription() {

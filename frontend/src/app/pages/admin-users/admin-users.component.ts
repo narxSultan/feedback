@@ -16,6 +16,7 @@ export class AdminUsersPageComponent implements OnInit {
   activities: any[] = [];
   message = '';
   resetPasswords: Record<number, string> = {};
+  showResetPasswords: Record<number, boolean> = {};
   activitiesSearch = '';
   activitiesPage = 0;
   readonly activitiesPerPage = 12;
@@ -128,5 +129,9 @@ export class AdminUsersPageComponent implements OnInit {
         this.message = error?.error?.message || 'Failed to reset password';
       }
     });
+  }
+
+  toggleResetPasswordVisibility(userId: number) {
+    this.showResetPasswords[userId] = !this.showResetPasswords[userId];
   }
 }

@@ -15,6 +15,8 @@ export class ResetPasswordPageComponent implements OnInit {
   newPassword = '';
   confirmPassword = '';
   message = '';
+  showNewPassword = false;
+  showConfirmPassword = false;
 
   constructor(private route: ActivatedRoute, private dashboard: UserDashboardService) {}
 
@@ -45,5 +47,13 @@ export class ResetPasswordPageComponent implements OnInit {
         this.message = error?.error?.message || 'Failed to reset password';
       }
     });
+  }
+
+  togglePasswordVisibility(field: 'new' | 'confirm') {
+    if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+      return;
+    }
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }

@@ -52,6 +52,8 @@ export class DashboardPageComponent {
     newPassword: '',
     confirmNewPassword: ''
   };
+  showNewPassword = false;
+  showConfirmNewPassword = false;
   materialsSearchTerm = '';
   selectedMaterialEvent: EventItem | null = null;
   selectedMaterialFile: File | null = null;
@@ -617,6 +619,14 @@ export class DashboardPageComponent {
         this.passwordMessage = error?.error?.message || (this.isSwahili ? 'Imeshindikana kubadili password' : 'Failed to update password');
       }
     });
+  }
+
+  togglePasswordVisibility(field: 'new' | 'confirm') {
+    if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+      return;
+    }
+    this.showConfirmNewPassword = !this.showConfirmNewPassword;
   }
 
   formatAnswer(value: unknown): string {

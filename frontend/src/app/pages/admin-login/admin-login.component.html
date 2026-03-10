@@ -12,14 +12,28 @@
         required
         class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
       />
-      <input
-        type="password"
-        [(ngModel)]="password"
-        name="password"
-        placeholder="Password"
-        required
-        class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400"
-      />
+      <div class="relative">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Password"
+          required
+          class="w-full rounded-xl border border-green-200 px-4 py-3 pr-12 outline-none focus:border-primary-400"
+        />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-green-700 hover:bg-green-50"
+          [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+        >
+          <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path *ngIf="showPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+          </svg>
+        </button>
+      </div>
 
       <button
         type="submit"

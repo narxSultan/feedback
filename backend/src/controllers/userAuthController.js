@@ -137,11 +137,11 @@ async function forgotPassword(req, res, next) {
       [email]
     );
 
-    // Always return success message to avoid email enumeration.
-    const genericResponse = { message: 'If the email exists, a reset link has been sent.' };
-
     if (!result.rows.length) {
-      return res.json(genericResponse);
+      return res.json({
+        message: 'Email not found',
+        emailExists: false,
+      });
     }
 
     const user = result.rows[0];
@@ -160,12 +160,18 @@ async function forgotPassword(req, res, next) {
     const frontendBase = process.env.FRONTEND_BASE_URL || 'http://localhost:4200';
     const resetLink = `${frontendBase}/reset-password?token=${rawToken}`;
 
+    const responsePayload = {
+      message: 'Email verified. Set your new password.',
+      emailExists: true,
+      resetToken: rawToken,
+    };
+
     const emailResult = await sendPasswordResetEmail(user.email, resetLink);
     if (!emailResult.sent && process.env.NODE_ENV !== 'production') {
-      return res.json({ ...genericResponse, resetLink });
+      return res.json({ ...responsePayload, resetLink });
     }
 
-    return res.json(genericResponse);
+    return res.json(responsePayload);
   } catch (error) {
     return next(error);
   }

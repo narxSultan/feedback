@@ -12,7 +12,21 @@
     <form class="mt-6 space-y-3" (ngSubmit)="submit()">
       <input type="text" [(ngModel)]="form.name" name="name" required placeholder="Full name" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
       <input type="email" [(ngModel)]="form.email" name="email" required placeholder="Email" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
-      <input type="password" [(ngModel)]="form.password" name="password" required placeholder="Password" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
+      <div class="relative">
+        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="form.password" name="password" required placeholder="Password" class="w-full rounded-xl border border-green-200 px-4 py-3 pr-12 outline-none focus:border-primary-400" />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-green-700 hover:bg-green-50"
+          [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+        >
+          <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path *ngIf="showPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+          </svg>
+        </button>
+      </div>
       <input type="text" [(ngModel)]="form.organization" name="organization" placeholder="Organization (optional)" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
       <button type="submit" class="w-full rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Register</span></button>
       <p *ngIf="message" class="text-sm text-red-600">{{ message }}</p>

@@ -14,6 +14,7 @@ export class AdminLoginPageComponent {
   email = '';
   password = '';
   errorMessage = '';
+  showPassword = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -25,5 +26,9 @@ export class AdminLoginPageComponent {
         this.errorMessage = error?.error?.message || 'Login failed.';
       }
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

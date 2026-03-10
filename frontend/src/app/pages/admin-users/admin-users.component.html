@@ -50,13 +50,27 @@
                   <button (click)="setRole(user.id, 'user')" class="rounded border border-green-300 px-2 py-1 text-xs text-green-800">
                     <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 12h12"/></svg>{{ isSwahili ? 'Fanya mtumiaji' : 'Make User' }}</span>
                   </button>
-                  <input
-                    type="password"
-                    [(ngModel)]="resetPasswords[user.id]"
-                    [name]="'resetPassword' + user.id"
-                    [placeholder]="isSwahili ? 'Password mpya' : 'New password'"
-                    class="rounded border border-green-300 px-2 py-1 text-xs"
-                  />
+                  <div class="relative">
+                    <input
+                      [type]="showResetPasswords[user.id] ? 'text' : 'password'"
+                      [(ngModel)]="resetPasswords[user.id]"
+                      [name]="'resetPassword' + user.id"
+                      [placeholder]="isSwahili ? 'Password mpya' : 'New password'"
+                      class="rounded border border-green-300 px-2 py-1 pr-8 text-xs"
+                    />
+                    <button
+                      type="button"
+                      (click)="toggleResetPasswordVisibility(user.id)"
+                      class="absolute inset-y-0 right-1 my-auto h-fit rounded p-1 text-green-700 hover:bg-green-50"
+                      [attr.aria-label]="showResetPasswords[user.id] ? 'Hide password' : 'Show password'"
+                    >
+                      <svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <path *ngIf="showResetPasswords[user.id]" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+                      </svg>
+                    </button>
+                  </div>
                   <button
                     (click)="resetPassword(user.id)"
                     class="rounded border border-amber-300 px-2 py-1 text-xs font-semibold text-amber-700"
