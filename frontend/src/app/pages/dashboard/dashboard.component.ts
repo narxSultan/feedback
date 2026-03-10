@@ -6,7 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { AdminService } from '../../core/services/admin.service';
 import { EventsService } from '../../core/services/events.service';
 import { LanguageService } from '../../core/services/language.service';
-import { EventItem, EventMaterial } from '../../core/models/types';
+import { ChatbotKnowledgeEntry, EventItem, EventMaterial } from '../../core/models/types';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -15,7 +15,7 @@ import { EventItem, EventMaterial } from '../../core/models/types';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardPageComponent {
-  activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials' = 'overview';
+  activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials' | 'chatbot' = 'overview';
   searchTerm = '';
   feedbacks: any[] = [];
   ads: any[] = [];
@@ -73,6 +73,23 @@ export class DashboardPageComponent {
   pendingAdToDelete: { id: number; title?: string } | null = null;
   showAdDeleteDialog = false;
   adDeletingId: number | null = null;
+  chatbotEntries: ChatbotKnowledgeEntry[] = [];
+  isChatbotLoading = false;
+  chatbotEditingId: number | null = null;
+  chatbotForm = {
+    title: '',
+    keywords: '',
+    answerEn: '',
+    answerSw: '',
+    isActive: true
+  };
+  chatbotEditForm = {
+    title: '',
+    keywords: '',
+    answerEn: '',
+    answerSw: '',
+    isActive: true
+  };
 
   constructor(
     private authService: AuthService,
@@ -103,13 +120,17 @@ export class DashboardPageComponent {
     this.languageService.toggleLanguage();
   }
 
-  setActiveSection(section: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials') {
+  setActiveSection(section: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials' | 'chatbot') {
     if (this.activeSection === 'materials' && section !== 'materials') {
       this.resetMaterialsSection();
     }
     this.activeSection = section;
     if (section === 'ads') {
       this.loadAds();
+      return;
+    }
+    if (section === 'chatbot') {
+      this.loadChatbotEntries();
     }
   }
 
@@ -152,6 +173,120 @@ export class DashboardPageComponent {
       },
       error: (error) => {
         this.message = error?.error?.message || 'Failed to load ads.';
+      }
+    });
+  }
+
+  loadChatbotEntries() {
+    this.isChatbotLoading = true;
+    this.adminService.getChatbotEntries().subscribe({
+      next: (entries) => {
+        this.chatbotEntries = entries;
+        this.isChatbotLoading = false;
+      },
+      error: (error) => {
+        this.isChatbotLoading = false;
+        this.message = error?.error?.message || (this.isSwahili ? 'Imeshindikana kupakia data za chatbot.' : 'Failed to load chatbot data.');
+      }
+    });
+  }
+
+  createChatbotEntry() {
+    const title = this.chatbotForm.title.trim();
+    const keywords = this.chatbotForm.keywords.trim();
+    const answerEn = this.chatbotForm.answerEn.trim();
+    const answerSw = this.chatbotForm.answerSw.trim();
+
+    if (!title || !keywords || !answerEn) {
+      this.message = this.isSwahili
+        ? 'Jaza title, keywords na jibu la English.'
+        : 'Please fill title, keywords and English answer.';
+      return;
+    }
+
+    this.adminService.createChatbotEntry({
+      title,
+      keywords,
+      answerEn,
+      answerSw: answerSw || undefined,
+      isActive: this.chatbotForm.isActive
+    }).subscribe({
+      next: (entry) => {
+        this.chatbotEntries = [entry, ...this.chatbotEntries];
+        this.chatbotForm = { title: '', keywords: '', answerEn: '', answerSw: '', isActive: true };
+        this.message = this.isSwahili ? 'Chatbot entry imeongezwa.' : 'Chatbot entry added.';
+      },
+      error: (error) => {
+        this.message = error?.error?.message || (this.isSwahili ? 'Imeshindikana kuongeza chatbot entry.' : 'Failed to add chatbot entry.');
+      }
+    });
+  }
+
+  startEditChatbot(entry: ChatbotKnowledgeEntry) {
+    this.chatbotEditingId = entry.id;
+    this.chatbotEditForm = {
+      title: entry.title || '',
+      keywords: entry.keywords || '',
+      answerEn: entry.answer_en || '',
+      answerSw: entry.answer_sw || '',
+      isActive: entry.is_active !== false
+    };
+  }
+
+  cancelEditChatbot() {
+    this.chatbotEditingId = null;
+    this.chatbotEditForm = { title: '', keywords: '', answerEn: '', answerSw: '', isActive: true };
+  }
+
+  saveChatbotEdit(entryId: number) {
+    const title = this.chatbotEditForm.title.trim();
+    const keywords = this.chatbotEditForm.keywords.trim();
+    const answerEn = this.chatbotEditForm.answerEn.trim();
+    const answerSw = this.chatbotEditForm.answerSw.trim();
+
+    if (!title || !keywords || !answerEn) {
+      this.message = this.isSwahili
+        ? 'Title, keywords na jibu la English haviwezi kuwa tupu.'
+        : 'Title, keywords and English answer cannot be empty.';
+      return;
+    }
+
+    this.adminService.updateChatbotEntry(entryId, {
+      title,
+      keywords,
+      answerEn,
+      answerSw: answerSw || null,
+      isActive: this.chatbotEditForm.isActive
+    }).subscribe({
+      next: (updated) => {
+        this.chatbotEntries = this.chatbotEntries.map((entry) => entry.id === updated.id ? updated : entry);
+        this.cancelEditChatbot();
+        this.message = this.isSwahili ? 'Chatbot entry imesasishwa.' : 'Chatbot entry updated.';
+      },
+      error: (error) => {
+        this.message = error?.error?.message || (this.isSwahili ? 'Imeshindikana kusasisha chatbot entry.' : 'Failed to update chatbot entry.');
+      }
+    });
+  }
+
+  deleteChatbotEntry(entry: ChatbotKnowledgeEntry) {
+    const confirmed = window.confirm(
+      this.isSwahili
+        ? `Una uhakika unataka kufuta entry ya chatbot: "${entry.title}"?`
+        : `Are you sure you want to delete chatbot entry: "${entry.title}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.adminService.deleteChatbotEntry(entry.id).subscribe({
+      next: () => {
+        this.chatbotEntries = this.chatbotEntries.filter((item) => item.id !== entry.id);
+        this.message = this.isSwahili ? 'Chatbot entry imefutwa.' : 'Chatbot entry deleted.';
+      },
+      error: (error) => {
+        this.message = error?.error?.message || (this.isSwahili ? 'Imeshindikana kufuta chatbot entry.' : 'Failed to delete chatbot entry.');
       }
     });
   }

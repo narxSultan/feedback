@@ -136,3 +136,22 @@ export interface UserFeedbackHistoryItem {
   custom_answers?: Record<string, string | string[]>;
   created_at: string;
 }
+
+export interface ChatbotKnowledgeEntry {
+  id: number;
+  title: string;
+  keywords: string;
+  answer_en: string;
+  answer_sw?: string | null;
+  is_active: boolean;
+  created_by_admin?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatbotAskResponse {
+  answer: string;
+  matched: boolean;
+  entryId?: number;
+  title?: string;
+}

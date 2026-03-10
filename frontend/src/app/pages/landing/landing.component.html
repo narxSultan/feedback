@@ -463,3 +463,112 @@
     </div>
   </div>
 </div>
+
+<div class="fixed bottom-5 right-5 z-50">
+  <button
+    *ngIf="!isChatbotOpen"
+    type="button"
+    (click)="toggleChatbot()"
+    class="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-600 to-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(14,116,144,0.75)] transition hover:from-sky-500 hover:to-emerald-500"
+  >
+    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-6l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/>
+    </svg>
+    {{ isSwahili ? 'Chatbot' : 'Chatbot' }}
+    <span class="h-2 w-2 rounded-full bg-white/90 group-hover:bg-white"></span>
+  </button>
+
+  <section
+    *ngIf="isChatbotOpen"
+    class="w-[min(92vw,390px)] overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.45)] backdrop-blur-md"
+  >
+    <header class="flex items-center justify-between border-b border-slate-200/50 bg-gradient-to-r from-sky-600 via-cyan-600 to-emerald-600 px-4 py-3 text-white">
+      <div>
+        <p class="text-sm font-semibold tracking-wide">{{ isSwahili ? 'Msaidizi wa Mfumo' : 'System Assistant' }}</p>
+        <p class="text-xs text-cyan-100">{{ isSwahili ? 'Uliza kuhusu Feedback System' : 'Ask about the Feedback System' }}</p>
+      </div>
+      <button
+        type="button"
+        (click)="closeChatbot()"
+        class="rounded-full p-1.5 text-cyan-100 transition hover:bg-white/20"
+        [attr.aria-label]="isSwahili ? 'Funga chatbot' : 'Close chatbot'"
+      >
+        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </header>
+
+    <div #chatMessagesContainer class="h-72 space-y-3 overflow-y-auto bg-gradient-to-b from-slate-100/80 via-cyan-50/70 to-emerald-50/70 px-3 py-3">
+      <article
+        *ngFor="let msg of chatbotMessages"
+        class="flex"
+        [ngClass]="{ 'justify-end': msg.sender === 'user', 'justify-start': msg.sender === 'bot' }"
+      >
+        <div class="flex items-end gap-2" [ngClass]="{ 'flex-row-reverse': msg.sender === 'user' }">
+          <span
+            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ring-1"
+            [ngClass]="{
+              'bg-gradient-to-br from-sky-500 to-cyan-500 text-white ring-sky-300/60': msg.sender === 'user',
+              'bg-white text-cyan-700 ring-cyan-200/80': msg.sender === 'bot'
+            }"
+          >
+            {{ msg.sender === 'user' ? 'U' : 'AI' }}
+          </span>
+
+          <div class="relative">
+          <p
+            class="max-w-[260px] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm"
+            [ngClass]="{
+              'bg-gradient-to-br from-sky-600 to-cyan-500 text-white ring-1 ring-sky-300/40': msg.sender === 'user',
+              'border border-slate-200 bg-white text-slate-800': msg.sender === 'bot'
+            }"
+          >
+            {{ msg.text }}
+          </p>
+          <span
+            class="absolute bottom-2 h-2.5 w-2.5 rotate-45"
+            [ngClass]="{
+              '-right-1 bg-cyan-500': msg.sender === 'user',
+              '-left-1 border-b border-l border-slate-200 bg-white': msg.sender === 'bot'
+            }"
+          ></span>
+        </div>
+        </div>
+      </article>
+
+      <article *ngIf="isSendingChatbot" class="flex justify-start">
+        <div class="flex items-end gap-2">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-cyan-700 ring-1 ring-cyan-200/80">AI</span>
+          <div class="relative inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm">
+            <span class="text-cyan-700">{{ isSwahili ? 'Anaandika' : 'Typing' }}</span>
+            <span class="inline-flex items-end gap-1">
+              <span class="h-1.5 w-1.5 rounded-full bg-cyan-600 animate-bounce"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-cyan-600 animate-bounce [animation-delay:120ms]"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-cyan-600 animate-bounce [animation-delay:240ms]"></span>
+            </span>
+            <span class="absolute -left-1 bottom-2 h-2.5 w-2.5 rotate-45 border-b border-l border-slate-200 bg-white"></span>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <form class="flex items-center gap-2 border-t border-slate-200/80 bg-white/90 px-3 py-3 backdrop-blur" (submit)="sendChatbotMessage($event)">
+      <input
+        type="text"
+        name="chatbotInput"
+        [(ngModel)]="chatbotInput"
+        [placeholder]="isSwahili ? 'Andika swali lako...' : 'Type your question...'"
+        class="flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+      />
+      <button
+        type="submit"
+        [disabled]="!chatbotInput.trim() || isSendingChatbot"
+        class="rounded-xl bg-gradient-to-r from-sky-600 to-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:from-sky-500 hover:to-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {{ isSwahili ? 'Tuma' : 'Send' }}
+      </button>
+    </form>
+  </section>
+</div>

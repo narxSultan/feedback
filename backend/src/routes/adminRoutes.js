@@ -16,6 +16,12 @@ const {
   resetUserPassword,
   changeAdminPassword,
 } = require('../controllers/adminController');
+const {
+  getChatbotEntries,
+  createChatbotEntry,
+  updateChatbotEntry,
+  deleteChatbotEntry,
+} = require('../controllers/chatbotController');
 const { authMiddleware, requireAdmin } = require('../middleware/authMiddleware');
 const { profileImageUpload, eventImageUpload } = require('../middleware/uploadMiddleware');
 
@@ -36,5 +42,9 @@ router.patch('/users/:userId/reset-password', authMiddleware, requireAdmin, rese
 router.patch('/change-password', authMiddleware, requireAdmin, changeAdminPassword);
 router.get('/activities', authMiddleware, requireAdmin, getUserActivities);
 router.get('/public-feedback', authMiddleware, requireAdmin, getPublicFeedback);
+router.get('/chatbot', authMiddleware, requireAdmin, getChatbotEntries);
+router.post('/chatbot', authMiddleware, requireAdmin, createChatbotEntry);
+router.patch('/chatbot/:entryId', authMiddleware, requireAdmin, updateChatbotEntry);
+router.delete('/chatbot/:entryId', authMiddleware, requireAdmin, deleteChatbotEntry);
 
 module.exports = router;

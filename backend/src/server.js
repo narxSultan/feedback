@@ -130,6 +130,27 @@ async function start() {
     await pool.query("ALTER TABLE ad_slides ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE");
     await pool.query("ALTER TABLE ad_slides ADD COLUMN IF NOT EXISTS description TEXT");
     await pool.query("ALTER TABLE ad_slides ADD COLUMN IF NOT EXISTS end_date DATE");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chatbot_knowledge (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(180) NOT NULL,
+        keywords TEXT NOT NULL,
+        answer_en TEXT NOT NULL,
+        answer_sw TEXT,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        created_by_admin INTEGER REFERENCES admins(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS title VARCHAR(180)");
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS keywords TEXT");
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS answer_en TEXT");
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS answer_sw TEXT");
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE");
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS created_by_admin INTEGER REFERENCES admins(id) ON DELETE SET NULL");
+    await pool.query("ALTER TABLE chatbot_knowledge ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()");
+    await pool.query("CREATE INDEX IF NOT EXISTS idx_chatbot_knowledge_is_active ON chatbot_knowledge(is_active)");
     app.listen(port, () => {
       console.log(`Backend running on port ${port}`);
     });

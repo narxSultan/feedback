@@ -39,6 +39,10 @@
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 10h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 14h8"/></svg>
           <span>{{ isSwahili ? 'Vifaa vya Event' : 'Event Materials' }}</span>
         </button>
+        <button type="button" (click)="setActiveSection('chatbot')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'chatbot'">
+          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-5l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg>
+          <span>Chatbot</span>
+        </button>
         <a [routerLink]="['/events']" [queryParams]="{ mode: 'list' }" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M8 2v4M16 2v4M3 10h18"/></svg>
           <span>{{ isSwahili ? 'Matukio' : 'Events' }}</span>
@@ -500,6 +504,150 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section *ngIf="activeSection === 'chatbot'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-green-900">Chatbot</h2>
+        <p class="mt-2 text-sm text-green-700">
+          {{
+            isSwahili
+              ? 'Weka taarifa ambazo chatbot atatumia kujibu maswali ya watumiaji kwenye landing page.'
+              : 'Add knowledge entries that the landing page chatbot will use to answer user questions.'
+          }}
+        </p>
+        <p *ngIf="message" class="mt-2 text-sm text-green-700">{{ message }}</p>
+
+        <form class="mt-4 grid gap-3 rounded-2xl border border-green-100 bg-green-50/40 p-4" (ngSubmit)="createChatbotEntry()">
+          <input
+            type="text"
+            [(ngModel)]="chatbotForm.title"
+            name="chatbotTitle"
+            [placeholder]="isSwahili ? 'Title ya mada (mfano: Jinsi ya kutuma feedback)' : 'Topic title (e.g. How to submit feedback)'"
+            class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm"
+          />
+          <input
+            type="text"
+            [(ngModel)]="chatbotForm.keywords"
+            name="chatbotKeywords"
+            [placeholder]="isSwahili ? 'Keywords (tenganisha kwa koma): feedback, rating, event code' : 'Keywords (comma separated): feedback, rating, event code'"
+            class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm"
+          />
+          <textarea
+            [(ngModel)]="chatbotForm.answerEn"
+            name="chatbotAnswerEn"
+            rows="3"
+            [placeholder]="isSwahili ? 'Jibu la English (required)' : 'English answer (required)'"
+            class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm"
+          ></textarea>
+          <textarea
+            [(ngModel)]="chatbotForm.answerSw"
+            name="chatbotAnswerSw"
+            rows="3"
+            [placeholder]="isSwahili ? 'Jibu la Swahili (optional)' : 'Swahili answer (optional)'"
+            class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm"
+          ></textarea>
+          <label class="inline-flex items-center gap-2 text-sm text-green-800">
+            <input type="checkbox" [(ngModel)]="chatbotForm.isActive" name="chatbotIsActive" />
+            {{ isSwahili ? 'Entry iwe active' : 'Set entry as active' }}
+          </label>
+          <button type="submit" class="w-fit rounded-xl bg-primary-300 px-4 py-2 text-sm font-semibold text-green-900 hover:bg-primary-400">
+            <span class="inline-flex items-center gap-2">
+              <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+              {{ isSwahili ? 'Ongeza Entry' : 'Add Entry' }}
+            </span>
+          </button>
+        </form>
+
+        <p *ngIf="isChatbotLoading" class="mt-4 text-sm text-green-700">{{ isSwahili ? 'Inapakia entries za chatbot...' : 'Loading chatbot entries...' }}</p>
+
+        <div class="mt-5 space-y-3">
+          <article *ngFor="let entry of chatbotEntries" class="rounded-2xl border border-green-100 bg-white p-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-semibold text-green-900">
+                  {{ entry.title }}
+                  <span
+                    class="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                    [ngClass]="entry.is_active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
+                  >
+                    {{ entry.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </p>
+                <p class="mt-1 text-xs text-green-700">{{ entry.keywords }}</p>
+                <p class="mt-2 text-xs font-semibold text-green-800">English</p>
+                <p class="text-sm text-green-700">{{ entry.answer_en }}</p>
+                <ng-container *ngIf="entry.answer_sw">
+                  <p class="mt-2 text-xs font-semibold text-green-800">Swahili</p>
+                  <p class="text-sm text-green-700">{{ entry.answer_sw }}</p>
+                </ng-container>
+                <p class="mt-2 text-[11px] text-green-600">{{ isSwahili ? 'Ilisasishwa' : 'Updated' }}: {{ entry.updated_at | date:'medium' }}</p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  (click)="startEditChatbot(entry)"
+                  class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-green-50"
+                >
+                  {{ isSwahili ? 'Hariri' : 'Edit' }}
+                </button>
+                <button
+                  type="button"
+                  (click)="deleteChatbotEntry(entry)"
+                  class="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
+                >
+                  {{ isSwahili ? 'Futa' : 'Delete' }}
+                </button>
+              </div>
+            </div>
+
+            <form *ngIf="chatbotEditingId === entry.id" class="mt-3 grid gap-2 rounded-xl border border-green-100 bg-green-50/40 p-3" (ngSubmit)="saveChatbotEdit(entry.id)">
+              <input
+                type="text"
+                [(ngModel)]="chatbotEditForm.title"
+                name="chatbotEditTitle_{{ entry.id }}"
+                class="w-full rounded-lg border border-green-200 px-3 py-2 text-sm"
+                [placeholder]="isSwahili ? 'Title ya mada' : 'Topic title'"
+              />
+              <input
+                type="text"
+                [(ngModel)]="chatbotEditForm.keywords"
+                name="chatbotEditKeywords_{{ entry.id }}"
+                class="w-full rounded-lg border border-green-200 px-3 py-2 text-sm"
+                [placeholder]="isSwahili ? 'Keywords (koma)' : 'Keywords (comma separated)'"
+              />
+              <textarea
+                [(ngModel)]="chatbotEditForm.answerEn"
+                name="chatbotEditAnswerEn_{{ entry.id }}"
+                rows="3"
+                class="w-full rounded-lg border border-green-200 px-3 py-2 text-sm"
+                [placeholder]="isSwahili ? 'Jibu la English' : 'English answer'"
+              ></textarea>
+              <textarea
+                [(ngModel)]="chatbotEditForm.answerSw"
+                name="chatbotEditAnswerSw_{{ entry.id }}"
+                rows="3"
+                class="w-full rounded-lg border border-green-200 px-3 py-2 text-sm"
+                [placeholder]="isSwahili ? 'Jibu la Swahili (optional)' : 'Swahili answer (optional)'"
+              ></textarea>
+              <label class="inline-flex items-center gap-2 text-xs text-green-800">
+                <input type="checkbox" [(ngModel)]="chatbotEditForm.isActive" name="chatbotEditActive_{{ entry.id }}" />
+                {{ isSwahili ? 'Entry iwe active' : 'Set entry as active' }}
+              </label>
+              <div class="flex items-center gap-2">
+                <button type="submit" class="rounded-lg bg-primary-300 px-3 py-1.5 text-xs font-semibold text-green-900 hover:bg-primary-400">
+                  {{ isSwahili ? 'Hifadhi' : 'Save' }}
+                </button>
+                <button type="button" (click)="cancelEditChatbot()" class="rounded-lg border border-green-300 px-3 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-50">
+                  {{ isSwahili ? 'Ghairi' : 'Cancel' }}
+                </button>
+              </div>
+            </form>
+          </article>
+          <p *ngIf="!chatbotEntries.length && !isChatbotLoading" class="text-sm text-green-700">
+            {{ isSwahili ? 'Hakuna chatbot entries bado.' : 'No chatbot entries yet.' }}
+          </p>
         </div>
       </section>
 

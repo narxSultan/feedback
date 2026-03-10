@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiBaseService } from './api-base.service';
 import { AuthService } from './auth.service';
+import { ChatbotKnowledgeEntry } from '../models/types';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -114,6 +115,30 @@ export class AdminService {
     const formData = new FormData();
     formData.append('image', file);
     return this.http.post<{ imageUrl: string }>(`${this.api.baseUrl}/admin/ads/upload-image`, formData, {
+      headers: this.authHeaders()
+    });
+  }
+
+  getChatbotEntries() {
+    return this.http.get<ChatbotKnowledgeEntry[]>(`${this.api.baseUrl}/admin/chatbot`, {
+      headers: this.authHeaders()
+    });
+  }
+
+  createChatbotEntry(payload: { title: string; keywords: string; answerEn: string; answerSw?: string; isActive?: boolean }) {
+    return this.http.post<ChatbotKnowledgeEntry>(`${this.api.baseUrl}/admin/chatbot`, payload, {
+      headers: this.authHeaders()
+    });
+  }
+
+  updateChatbotEntry(entryId: number, payload: { title?: string; keywords?: string; answerEn?: string; answerSw?: string | null; isActive?: boolean }) {
+    return this.http.patch<ChatbotKnowledgeEntry>(`${this.api.baseUrl}/admin/chatbot/${entryId}`, payload, {
+      headers: this.authHeaders()
+    });
+  }
+
+  deleteChatbotEntry(entryId: number) {
+    return this.http.delete<{ message: string }>(`${this.api.baseUrl}/admin/chatbot/${entryId}`, {
       headers: this.authHeaders()
     });
   }

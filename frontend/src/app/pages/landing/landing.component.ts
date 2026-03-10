@@ -7,6 +7,7 @@ import { EventsService } from '../../core/services/events.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UserAuthService } from '../../core/services/user-auth.service';
 import { LanguageService } from '../../core/services/language.service';
+import { ChatbotService } from '../../core/services/chatbot.service';
 import { EventFeedbackQuestion, EventItem, EventMaterial } from '../../core/models/types';
 
 @Component({
@@ -30,8 +31,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   isUploadingMaterial = false;
   activePanel: 'image' | 'materials' = 'image';
   @ViewChild('materialFileInput') materialFileInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('chatMessagesContainer') chatMessagesContainer?: ElementRef<HTMLDivElement>;
   private codeLookupTimeout: ReturnType<typeof setTimeout> | null = null;
   private slideTimer: ReturnType<typeof setInterval> | null = null;
+  private chatbotReplyTimer: ReturnType<typeof setTimeout> | null = null;
   activeSlide = 0;
   defaultSlides: Array<{ id?: number; title: string; image: string; description?: string; eventCode?: string; targetUrl?: string; slideType?: 'event' | 'ad' | 'default' }> = [
     {
@@ -57,6 +60,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   readonly questionsPerPage = 3;
 
   feedbackMessage = '';
+  isChatbotOpen = false;
+  isSendingChatbot = false;
+  chatbotInput = '';
+  chatbotMessages: Array<{ sender: 'bot' | 'user'; text: string }> = [];
 
   get isSwahili(): boolean {
     return this.languageService.isSwahili;
@@ -68,6 +75,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userAuthService: UserAuthService,
     private languageService: LanguageService,
+    private chatbotService: ChatbotService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -112,7 +120,21 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   toggleLanguage() {
+    const wasSwahili = this.isSwahili;
     this.languageService.toggleLanguage();
+    this.handleChatbotLanguageChange(wasSwahili);
+  }
+
+  toggleChatbot() {
+    this.isChatbotOpen = !this.isChatbotOpen;
+    if (this.isChatbotOpen) {
+      this.ensureChatbotWelcomeMessage();
+      this.queueChatScrollToBottom();
+    }
+  }
+
+  closeChatbot() {
+    this.isChatbotOpen = false;
   }
 
   ngOnDestroy() {
@@ -121,6 +143,9 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     }
     if (this.codeLookupTimeout) {
       clearTimeout(this.codeLookupTimeout);
+    }
+    if (this.chatbotReplyTimer) {
+      clearTimeout(this.chatbotReplyTimer);
     }
   }
 
@@ -315,6 +340,117 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.feedbackMessage = error?.error?.message || 'Failed to submit feedback.';
       }
     });
+  }
+
+  sendChatbotMessage(event?: Event) {
+    event?.preventDefault();
+
+    const question = this.chatbotInput.trim();
+    if (!question || this.isSendingChatbot) {
+      return;
+    }
+
+    this.chatbotMessages = [...this.chatbotMessages, { sender: 'user', text: question }];
+    this.chatbotInput = '';
+    this.isSendingChatbot = true;
+    this.queueChatScrollToBottom();
+    const startedAt = Date.now();
+
+    const showReplyWithLoadingDelay = (reply: string) => {
+      const elapsed = Date.now() - startedAt;
+      const remaining = Math.max(0, 2000 - elapsed);
+
+      if (this.chatbotReplyTimer) {
+        clearTimeout(this.chatbotReplyTimer);
+      }
+
+      this.chatbotReplyTimer = setTimeout(() => {
+        this.isSendingChatbot = false;
+        this.chatbotMessages = [...this.chatbotMessages, { sender: 'bot', text: reply }];
+        this.queueChatScrollToBottom();
+        this.chatbotReplyTimer = null;
+      }, remaining);
+    };
+
+    this.chatbotService.askQuestion(question, this.isSwahili ? 'sw' : 'en').subscribe({
+      next: (response) => {
+        const answer = String(response?.answer || '').trim() || this.chatbotFallbackMessage;
+        showReplyWithLoadingDelay(answer);
+      },
+      error: () => {
+        showReplyWithLoadingDelay(this.chatbotErrorMessage);
+      }
+    });
+  }
+
+  private ensureChatbotWelcomeMessage() {
+    if (this.chatbotMessages.length) {
+      return;
+    }
+    this.chatbotMessages = [{ sender: 'bot', text: this.chatbotWelcomeMessage }];
+    this.queueChatScrollToBottom();
+  }
+
+  private handleChatbotLanguageChange(previousIsSwahili: boolean) {
+    if (previousIsSwahili === this.isSwahili) {
+      return;
+    }
+
+    const previousWelcome = previousIsSwahili
+      ? 'Karibu. Uliza chochote kuhusu jinsi Feedback System inavyofanya kazi.'
+      : 'Welcome. Ask anything about how the Feedback System works.';
+
+    const hasOnlyWelcomeMessage = this.chatbotMessages.length === 1
+      && this.chatbotMessages[0].sender === 'bot'
+      && this.chatbotMessages[0].text === previousWelcome;
+
+    if (hasOnlyWelcomeMessage) {
+      this.chatbotMessages = [{ sender: 'bot', text: this.chatbotWelcomeMessage }];
+      this.queueChatScrollToBottom();
+      return;
+    }
+
+    if (this.chatbotMessages.length > 0) {
+      this.chatbotMessages = [
+        ...this.chatbotMessages,
+        { sender: 'bot', text: this.chatbotLanguageChangedMessage }
+      ];
+      this.queueChatScrollToBottom();
+    }
+  }
+
+  private queueChatScrollToBottom() {
+    setTimeout(() => {
+      const container = this.chatMessagesContainer?.nativeElement;
+      if (!container) {
+        return;
+      }
+      container.scrollTop = container.scrollHeight;
+    }, 0);
+  }
+
+  private get chatbotWelcomeMessage(): string {
+    return this.isSwahili
+      ? 'Karibu. Uliza chochote kuhusu jinsi Feedback System inavyofanya kazi.'
+      : 'Welcome. Ask anything about how the Feedback System works.';
+  }
+
+  private get chatbotErrorMessage(): string {
+    return this.isSwahili
+      ? 'Samahani, imeshindikana kupata jibu kwa sasa. Jaribu tena.'
+      : 'Sorry, I could not get an answer right now. Please try again.';
+  }
+
+  private get chatbotFallbackMessage(): string {
+    return this.isSwahili
+      ? 'Samahani, sijapata jibu la moja kwa moja. Jaribu kuuliza kwa maneno mengine.'
+      : 'Sorry, I could not find a direct answer. Please try rephrasing your question.';
+  }
+
+  private get chatbotLanguageChangedMessage(): string {
+    return this.isSwahili
+      ? 'Sawa, sasa nitaendelea kujibu kwa Kiswahili.'
+      : 'Okay, I will continue replying in English.';
   }
 
   private resetMaterials() {
