@@ -75,6 +75,9 @@ export class UserDashboardPageComponent implements OnInit {
   pendingMaterialToDelete: EventMaterial | null = null;
   showMaterialDeleteDialog = false;
   materialDeletingId: number | null = null;
+  pendingEventToDelete: EventItem | null = null;
+  showEventDeleteDialog = false;
+  deletingEventId: number | null = null;
 
   eventForm = {
     title: '',
@@ -933,31 +936,50 @@ export class UserDashboardPageComponent implements OnInit {
   }
 
   deleteEvent(event: EventItem) {
-    const confirmed = window.confirm(`Delete event "${event.title}"? This will remove all related feedback.`);
-    if (!confirmed) {
+    this.pendingEventToDelete = event;
+    this.showEventDeleteDialog = true;
+  }
+
+  confirmDeleteEvent() {
+    if (!this.pendingEventToDelete) {
+      this.resetEventDeleteDialog();
       return;
     }
 
-    this.dashboard.deleteEvent(event.id).subscribe({
+    const target = this.pendingEventToDelete;
+    this.deletingEventId = target.id;
+    this.dashboard.deleteEvent(target.id).subscribe({
       next: () => {
-        this.events = this.events.filter((item) => item.id !== event.id);
-        if (this.selectedEventId === event.id) {
+        this.events = this.events.filter((item) => item.id !== target.id);
+        if (this.selectedEventId === target.id) {
           this.selectedEventId = null;
           this.selectedEventTitle = '';
           this.selectedEventFeedback = [];
           this.selectedEventFeedbackCount = 0;
         }
-        if (this.editingUserEventId === event.id) {
+        if (this.editingUserEventId === target.id) {
           this.cancelUserEventEdit();
         }
         this.message = 'Event deleted successfully';
         this.showToast('Event deleted successfully', 'success');
+        this.resetEventDeleteDialog();
       },
       error: (error) => {
         this.message = error?.error?.message || 'Failed to delete event';
         this.showToast(this.message, 'error');
+        this.resetEventDeleteDialog();
       }
     });
+  }
+
+  cancelDeleteEvent() {
+    this.resetEventDeleteDialog();
+  }
+
+  private resetEventDeleteDialog() {
+    this.pendingEventToDelete = null;
+    this.showEventDeleteDialog = false;
+    this.deletingEventId = null;
   }
 
   private showToast(message: string, type: 'success' | 'error') {

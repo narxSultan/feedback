@@ -1,6 +1,6 @@
-<div class="min-h-screen bg-gradient-to-b from-green-50/50 to-white px-4 py-8 sm:px-6 lg:px-8">
-  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
-    <aside class="h-fit rounded-3xl border border-green-100 bg-white p-5 shadow-soft lg:sticky lg:top-6">
+<div class="liquid-dashboard min-h-screen bg-gradient-to-b from-green-50/50 to-white px-4 py-8 sm:px-6 lg:px-8 flex flex-col">
+  <div class="mx-auto grid w-full max-w-7xl flex-1 gap-6 lg:grid-cols-[280px_1fr]">
+    <aside class="glass-panel h-fit rounded-3xl border border-green-100 bg-white p-5 shadow-soft lg:sticky lg:top-6">
       <div class="mb-6 flex items-center gap-3 rounded-2xl bg-green-50 p-4">
         <img
           [src]="adminAvatar"
@@ -70,12 +70,12 @@
     </aside>
 
     <main class="space-y-6">
-      <section class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <p class="text-sm font-medium text-green-700">{{ isSwahili ? 'Karibu' : 'Welcome' }}</p>
         <h1 class="text-3xl font-semibold text-green-900">{{ adminName }} Dashboard</h1>
       </section>
 
-      <section *ngIf="activeSection === 'overview'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'overview'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Muhtasari' : 'Overview' }}</h2>
         <p class="mt-2 text-sm text-green-700">{{ isSwahili ? 'Tumia menu kushoto kusimamia feedback, users na events.' : 'Use the left menu to manage feedback, users, and events.' }}</p>
 
@@ -116,7 +116,7 @@
         </ng-template>
       </section>
 
-      <section *ngIf="activeSection === 'feedback'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'feedback'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <div class="flex flex-wrap items-center gap-3">
           <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Public Feedback' : 'Public Feedback' }}</h2>
           <input
@@ -166,7 +166,7 @@
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'security'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'security'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Profile ya Admin' : 'Admin Profile' }}</h2>
         <form class="mt-3 space-y-3 max-w-lg" (ngSubmit)="updateProfile()">
           <input type="text" [(ngModel)]="profileForm.name" name="profileName" [placeholder]="isSwahili ? 'Jina kamili' : 'Full name'" class="w-full rounded-xl border border-green-200 px-4 py-3 outline-none focus:border-primary-400" />
@@ -210,7 +210,7 @@
         </form>
       </section>
 
-      <section *ngIf="activeSection === 'ads'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'ads'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Matangazo ya Landing' : 'Landing Ads' }}</h2>
         <p class="mt-2 text-sm text-green-700">
           {{ isSwahili ? 'Pakia picha na weka link. Mgeni akibofya picha ya tangazo ataenda kwenye link hiyo.' : 'Upload image and set target link. Clicking ad slide opens its link.' }}
@@ -291,7 +291,7 @@
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'materials'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'materials'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Vifaa vya Event' : 'Event Materials' }}</h2>
@@ -481,15 +481,23 @@
           <p class="mt-2 text-sm text-green-700">{{ isSwahili ? 'Angalia public page.' : 'Open the public page.' }}</p>
         </a>
       </section>
+
     </main>
   </div>
+
+  <footer class="glass-panel glass-footer mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-green-100 px-5 py-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-green-800">
+      <p class="font-medium">{{ isSwahili ? 'Dashboard ya Admin - Feedback System' : 'Admin Dashboard - Feedback System' }}</p>
+      <p>{{ isSwahili ? 'Simamia events, users, na public feedback.' : 'Manage events, users, and public feedback.' }}</p>
+    </div>
+  </footer>
 </div>
 
   <div
     *ngIf="showMaterialDeleteDialog"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    class="liquid-confirm-overlay fixed inset-0 z-50 flex items-center justify-center px-4"
   >
-    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+    <div class="liquid-confirm-panel w-full max-w-sm rounded-2xl p-6">
       <h3 class="text-lg font-semibold text-green-900">
         {{ isSwahili ? 'Thibitisha kufuta material' : 'Confirm delete material' }}
       </h3>
@@ -507,7 +515,7 @@
         <button
           type="button"
           (click)="cancelMaterialDelete()"
-          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-green-800"
         >
           {{ isSwahili ? 'Katiza' : 'Cancel' }}
         </button>
@@ -530,9 +538,9 @@
 
   <div
     *ngIf="showAdDeleteDialog"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    class="liquid-confirm-overlay fixed inset-0 z-50 flex items-center justify-center px-4"
   >
-    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+    <div class="liquid-confirm-panel w-full max-w-sm rounded-2xl p-6">
       <h3 class="text-lg font-semibold text-green-900">
         {{ isSwahili ? 'Thibitisha kufuta tangazo' : 'Confirm delete ad' }}
       </h3>
@@ -550,7 +558,7 @@
         <button
           type="button"
           (click)="cancelAdDelete()"
-          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-green-800"
         >
           {{ isSwahili ? 'Katiza' : 'Cancel' }}
         </button>

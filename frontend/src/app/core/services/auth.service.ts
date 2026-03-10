@@ -15,6 +15,7 @@ export class AuthService {
     ).pipe(
       tap((response) => {
         localStorage.setItem('auth_token', response.token);
+        localStorage.setItem('token', response.token);
         localStorage.setItem('admin_name', response.admin.name);
         localStorage.setItem('admin_email', response.admin.email);
         localStorage.setItem('admin_profile_image', response.admin.profile_image_url || '');
@@ -25,6 +26,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
     localStorage.removeItem('admin_name');
     localStorage.removeItem('admin_email');
     localStorage.removeItem('admin_profile_image');

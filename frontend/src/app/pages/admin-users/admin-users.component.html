@@ -1,5 +1,5 @@
-<div class="min-h-screen px-4 py-10 sm:px-8">
-  <div class="mx-auto max-w-6xl space-y-6">
+<div class="liquid-dashboard min-h-screen px-4 py-10 sm:px-8 flex flex-col">
+  <div class="mx-auto w-full max-w-6xl flex-1 space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h1 class="text-3xl font-semibold text-green-900">{{ isSwahili ? 'Usimamizi wa Watumiaji' : 'Users Management' }}</h1>
       <div class="flex items-center gap-3">
@@ -122,4 +122,11 @@
       </div>
     </section>
   </div>
+
+  <footer class="glass-panel glass-footer mx-auto mt-6 w-full max-w-6xl rounded-3xl border border-green-100 px-5 py-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-green-800">
+      <p class="font-medium">{{ isSwahili ? 'Ukurasa wa Watumiaji - Feedback System' : 'Users Page - Feedback System' }}</p>
+      <p>{{ isSwahili ? 'Simamia watumiaji, roles, na activities.' : 'Manage users, roles, and activities.' }}</p>
+    </div>
+  </footer>
 </div>

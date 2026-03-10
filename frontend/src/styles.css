@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --page-bg: #ffffff;
+  --page-bg: #f2e6ee;
   --primary: #86efac;
   --primary-strong: #22c55e;
+  --glass-tint: #f2e6ee;
+  --glass-border: rgba(255, 255, 255, 0.58);
+  --glass-shadow: 0 24px 50px -30px rgba(94, 57, 78, 0.45);
 }
 
 * {
@@ -28,4 +31,106 @@ textarea,
 select,
 button {
   font: inherit;
+}
+
+.liquid-dashboard {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 36%),
+    radial-gradient(circle at 88% 92%, rgba(240, 253, 244, 0.5) 0%, rgba(240, 253, 244, 0) 46%),
+    linear-gradient(145deg, rgba(242, 230, 238, 0.9) 0%, rgba(250, 242, 246, 0.8) 52%, rgba(234, 252, 240, 0.65) 100%);
+}
+
+.liquid-dashboard .glass-panel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.44) 0%, rgba(242, 230, 238, 0.58) 100%);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+}
+
+.liquid-dashboard .glass-panel article,
+.liquid-dashboard .glass-panel .rounded-xl.bg-white,
+.liquid-dashboard .glass-panel .rounded-2xl.bg-white,
+.liquid-dashboard .glass-panel .bg-green-50,
+.liquid-dashboard .glass-panel .bg-green-50\/40,
+.liquid-dashboard .glass-panel .bg-green-50\/60 {
+  background-color: rgba(255, 255, 255, 0.44);
+  border-color: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.liquid-dashboard .glass-panel nav button.bg-green-100 {
+  background-color: rgba(242, 230, 238, 0.74);
+}
+
+.liquid-dashboard .glass-panel nav button:hover,
+.liquid-dashboard .glass-panel nav a:hover {
+  background-color: rgba(255, 255, 255, 0.38);
+}
+
+.liquid-confirm-overlay {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 38%),
+    rgba(20, 12, 18, 0.52);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+
+.liquid-confirm-panel {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.58) 0%, rgba(242, 230, 238, 0.62) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  box-shadow: 0 28px 60px -35px rgba(60, 34, 49, 0.75);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.liquid-confirm-panel .liquid-cancel {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.liquid-confirm-panel .liquid-cancel:hover {
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.liquid-event-form {
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.36) 0%, rgba(242, 230, 238, 0.48) 100%);
+  backdrop-filter: blur(12px) saturate(125%);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+}
+
+.liquid-event-form input:not([type='checkbox']):not([type='radio']),
+.liquid-event-form textarea,
+.liquid-event-form select {
+  background: rgba(255, 255, 255, 0.48);
+  border-color: #90ee90;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.liquid-event-form input::placeholder,
+.liquid-event-form textarea::placeholder {
+  color: #7acb7a;
+}
+
+.liquid-event-form .liquid-event-subpanel {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.34) 0%, rgba(242, 230, 238, 0.42) 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.glass-footer {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 45%);
+  pointer-events: none;
 }

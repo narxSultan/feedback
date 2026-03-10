@@ -11,9 +11,20 @@ export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  return next(req).pipe(
+  const token = localStorage.getItem('token');
+  let authReq = req;
+
+  if (token) {
+    authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      const hasAuthHeader = req.headers.has('Authorization');
+      const hasAuthHeader = authReq.headers.has('Authorization');
 
       if (error.status === 401 && hasAuthHeader) {
         const message = typeof error.error?.message === 'string'

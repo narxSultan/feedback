@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-b from-green-50/50 to-white px-4 py-8 sm:px-6 lg:px-8">
+<div class="liquid-dashboard min-h-screen bg-gradient-to-b from-green-50/50 to-white px-4 py-8 sm:px-6 lg:px-8 flex flex-col">
   <div *ngIf="showToastOverlay" class="fixed right-4 top-4 z-50">
     <div
       class="rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg"
@@ -9,8 +9,8 @@
     </div>
   </div>
 
-  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
-    <aside class="h-fit rounded-3xl border border-green-100 bg-white p-5 shadow-soft lg:sticky lg:top-6">
+  <div class="mx-auto grid w-full max-w-7xl flex-1 gap-6 lg:grid-cols-[280px_1fr]">
+    <aside class="glass-panel h-fit rounded-3xl border border-green-100 bg-white p-5 shadow-soft lg:sticky lg:top-6">
       <div class="mb-6 flex items-center gap-3 rounded-2xl bg-green-50 p-3">
         <img
           [src]="profile?.profile_image_url || 'assets/logo.png'"
@@ -66,7 +66,7 @@
     </aside>
 
     <main class="space-y-6">
-      <section class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p class="text-sm text-green-700">Welcome back</p>
@@ -87,7 +87,7 @@
         <p *ngIf="message" class="mt-4 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">{{ message }}</p>
       </section>
 
-      <section *ngIf="activeSection === 'overview'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'overview'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">Overview</h2>
         <p class="mt-2 text-sm text-green-700">Use the sidebar to manage events, payments, profile, and security settings.</p>
 
@@ -128,9 +128,9 @@
         </ng-template>
       </section>
 
-      <section *ngIf="activeSection === 'create-event'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'create-event'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">Create Event</h2>
-        <form class="mt-4 grid gap-3" (ngSubmit)="createEvent()">
+        <form class="liquid-event-form mt-4 grid gap-3" (ngSubmit)="createEvent()">
           <input type="text" [(ngModel)]="eventForm.title" name="title" required placeholder="Event title" class="w-full rounded-xl border border-green-200 px-4 py-3" />
           <textarea [(ngModel)]="eventForm.description" name="description" rows="3" placeholder="Description" class="w-full rounded-xl border border-green-200 px-4 py-3"></textarea>
           <div class="grid gap-3 sm:grid-cols-2">
@@ -144,7 +144,7 @@
           <p class="text-xs text-green-700">Accepted: JPG, PNG, WEBP. Max {{ eventImageMaxMb }}MB.</p>
           <input type="url" [(ngModel)]="eventForm.imageUrl" name="imageUrl" placeholder="or Event image URL" class="w-full rounded-xl border border-green-200 px-4 py-3" />
 
-          <div class="rounded-2xl border border-green-100 bg-green-50/40 p-4">
+          <div class="liquid-event-subpanel rounded-2xl border border-green-100 bg-green-50/40 p-4">
             <label class="inline-flex items-center gap-2 text-sm font-medium text-green-900">
               <input type="checkbox" [(ngModel)]="useCustomForm" name="useCustomFormUser" />
               <span>Use custom feedback form for this event</span>
@@ -207,7 +207,7 @@
         </button>
       </section>
 
-      <section *ngIf="activeSection === 'events-feedback'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'events-feedback'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">Events & Feedback</h2>
         <div class="mt-4 space-y-3">
           <article *ngFor="let event of events" class="rounded-2xl border border-green-100 p-4">
@@ -280,7 +280,7 @@
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'feedback-history'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'feedback-history'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 class="text-xl font-semibold text-green-900">Feedback History</h2>
           <button (click)="exportFeedbackCsv()" class="rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white">
@@ -396,7 +396,7 @@
         </div>
       </section> -->
 
-      <section *ngIf="activeSection === 'materials'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'materials'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-semibold text-green-900">Event Materials</h2>
@@ -519,7 +519,7 @@
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'profile'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'profile'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">Profile Settings</h2>
         <form class="mt-4 grid gap-3" (ngSubmit)="updateProfile()">
           <input type="text" [(ngModel)]="profileForm.name" name="profileName" placeholder="Full name" class="w-full rounded-xl border border-green-200 px-4 py-3" />
@@ -535,7 +535,7 @@
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'security'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'security'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
         <h2 class="text-xl font-semibold text-green-900">Security</h2>
         <form class="mt-4 grid gap-3" (ngSubmit)="changePassword()">
           <input type="password" [(ngModel)]="passwordForm.oldPassword" name="oldPassword" placeholder="Old password" class="w-full rounded-xl border border-green-200 px-4 py-3" />
@@ -544,24 +544,33 @@
           <button type="submit" class="w-fit rounded-xl border border-green-300 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>Change Password</span></button>
         </form>
       </section>
+
     </main>
   </div>
+
+  <footer class="glass-panel glass-footer mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-green-100 px-5 py-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-green-800">
+      <p class="font-medium">Feedback System User Dashboard</p>
+      <p>Built for events, feedback, and payments.</p>
+    </div>
+  </footer>
 </div>
 
   <div
     *ngIf="showMaterialDeleteDialog"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    class="liquid-confirm-overlay fixed inset-0 z-50 flex items-center justify-center px-4"
   >
-    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
+    <div class="liquid-confirm-panel w-full max-w-sm rounded-2xl p-6">
       <h3 class="text-lg font-semibold text-green-900">Confirm Delete Material</h3>
       <p class="mt-2 text-sm text-green-700">
-        Are you sure you want to delete <strong>{{ pendingMaterialToDelete?.original_name }}</strong>? This cannot be undone.
+        Are you sure you want to delete <strong>{{ pendingMaterialToDelete?.original_name }}</strong>
+        from {{ selectedMaterialEvent?.title }}? This cannot be undone.
       </p>
       <div class="mt-4 flex flex-wrap justify-end gap-3">
         <button
           type="button"
           (click)="cancelDeleteMaterial()"
-          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-green-800"
         >
           Cancel
         </button>
@@ -579,32 +588,32 @@
   </div>
 
   <div
-    *ngIf="showMaterialDeleteDialog"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    *ngIf="showEventDeleteDialog"
+    class="liquid-confirm-overlay fixed inset-0 z-50 flex items-center justify-center px-4"
   >
-    <div class="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-6 shadow-2xl">
-      <h3 class="text-lg font-semibold text-green-900">Confirm delete</h3>
+    <div class="liquid-confirm-panel w-full max-w-sm rounded-2xl p-6">
+      <h3 class="text-lg font-semibold text-green-900">Confirm delete event</h3>
       <p class="mt-2 text-sm text-green-700">
         Are you sure you want to delete
-        <strong>{{ pendingMaterialToDelete?.original_name }}</strong>
-        from {{ selectedMaterialEvent?.title }}? This cannot be undone.
+        <strong>{{ pendingEventToDelete?.title }}</strong>?
+        All related feedback will be removed.
       </p>
       <div class="mt-4 flex flex-wrap justify-end gap-3">
         <button
           type="button"
-          (click)="cancelDeleteMaterial()"
-          class="rounded-full border border-green-200 px-4 py-2 text-sm font-semibold text-green-800 hover:bg-green-50"
+          (click)="cancelDeleteEvent()"
+          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-green-800"
         >
           Cancel
         </button>
         <button
           type="button"
-          (click)="confirmDeleteMaterial()"
-          [disabled]="materialDeletingId === pendingMaterialToDelete?.id"
+          (click)="confirmDeleteEvent()"
+          [disabled]="deletingEventId === pendingEventToDelete?.id"
           class="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-wait disabled:opacity-60"
         >
-          <span *ngIf="materialDeletingId !== pendingMaterialToDelete?.id">Delete</span>
-          <span *ngIf="materialDeletingId === pendingMaterialToDelete?.id">Deleting...</span>
+          <span *ngIf="deletingEventId !== pendingEventToDelete?.id">Delete</span>
+          <span *ngIf="deletingEventId === pendingEventToDelete?.id">Deleting...</span>
         </button>
       </div>
     </div>
