@@ -21,7 +21,8 @@ async function authMiddleware(req, res, next) {
       return res.status(401).json({ message: 'Session not found or expired' });
     }
 
-    if (session.account_type && session.account_type !== decoded.role) {
+    const tokenSessionType = decoded.sessionType || session.account_type;
+    if (session.account_type && tokenSessionType && session.account_type !== tokenSessionType) {
       return res.status(401).json({ message: 'Session mismatch' });
     }
 

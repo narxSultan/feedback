@@ -7,6 +7,7 @@ function signUserToken(user, sessionId) {
       email: user.email,
       name: user.name,
       role: user.role || 'user',
+      sessionType: 'user',
       sessionId
     },
     process.env.JWT_SECRET,
@@ -21,6 +22,7 @@ function signAdminToken(admin, sessionId) {
       email: admin.email,
       name: admin.name,
       role: 'admin',
+      sessionType: 'admin',
       sessionId
     },
     process.env.JWT_SECRET,

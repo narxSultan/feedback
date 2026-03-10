@@ -11,7 +11,15 @@ export class UserAuthService {
   register(payload: UserRegisterPayload) {
     return this.http.post<{ token: string; user: UserProfile }>(`${this.api.baseUrl}/users/register`, payload).pipe(
       tap((response) => {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('auth_role');
+        localStorage.removeItem('admin_name');
+        localStorage.removeItem('admin_email');
+        localStorage.removeItem('admin_profile_image');
         localStorage.setItem('user_token', response.token);
+        localStorage.setItem('session_token', response.token);
+        localStorage.setItem('session_type', 'user');
         localStorage.setItem('user_name', response.user.name);
         localStorage.setItem('user_role', response.user.role);
       })
@@ -21,26 +29,51 @@ export class UserAuthService {
   login(payload: UserLoginPayload) {
     return this.http.post<{ token: string; user: UserProfile }>(`${this.api.baseUrl}/users/login`, payload).pipe(
       tap((response) => {
-        localStorage.setItem('user_token', response.token);
-        localStorage.setItem('user_name', response.user.name);
-        localStorage.setItem('user_role', response.user.role);
-        localStorage.setItem('user_profile_image', response.user.profile_image_url || '');
         if (response.user.role === 'admin') {
+          localStorage.removeItem('user_token');
+          localStorage.removeItem('user_name');
+          localStorage.removeItem('user_role');
+          localStorage.removeItem('user_profile_image');
           localStorage.setItem('auth_token', response.token);
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('session_token', response.token);
+          localStorage.setItem('session_type', 'admin');
           localStorage.setItem('admin_name', response.user.name);
           localStorage.setItem('admin_email', response.user.email);
           localStorage.setItem('admin_profile_image', response.user.profile_image_url || '');
           localStorage.setItem('auth_role', 'admin');
+          return;
         }
+
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('auth_role');
+        localStorage.removeItem('admin_name');
+        localStorage.removeItem('admin_email');
+        localStorage.removeItem('admin_profile_image');
+        localStorage.setItem('user_token', response.token);
+        localStorage.setItem('session_token', response.token);
+        localStorage.setItem('session_type', 'user');
+        localStorage.setItem('user_name', response.user.name);
+        localStorage.setItem('user_role', response.user.role);
+        localStorage.setItem('user_profile_image', response.user.profile_image_url || '');
       })
     );
   }
 
   logout() {
     localStorage.removeItem('user_token');
+    localStorage.removeItem('session_token');
+    localStorage.removeItem('session_type');
     localStorage.removeItem('user_name');
     localStorage.removeItem('user_role');
     localStorage.removeItem('user_profile_image');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('auth_role');
+    localStorage.removeItem('admin_name');
+    localStorage.removeItem('admin_email');
+    localStorage.removeItem('admin_profile_image');
   }
 
   isAuthenticated(): boolean {

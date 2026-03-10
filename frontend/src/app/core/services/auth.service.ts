@@ -14,8 +14,14 @@ export class AuthService {
       payload
     ).pipe(
       tap((response) => {
+        localStorage.removeItem('user_token');
+        localStorage.removeItem('user_name');
+        localStorage.removeItem('user_role');
+        localStorage.removeItem('user_profile_image');
         localStorage.setItem('auth_token', response.token);
         localStorage.setItem('token', response.token);
+        localStorage.setItem('session_token', response.token);
+        localStorage.setItem('session_type', 'admin');
         localStorage.setItem('admin_name', response.admin.name);
         localStorage.setItem('admin_email', response.admin.email);
         localStorage.setItem('admin_profile_image', response.admin.profile_image_url || '');
@@ -27,6 +33,8 @@ export class AuthService {
   logout() {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('token');
+    localStorage.removeItem('session_token');
+    localStorage.removeItem('session_type');
     localStorage.removeItem('admin_name');
     localStorage.removeItem('admin_email');
     localStorage.removeItem('admin_profile_image');

@@ -18,10 +18,23 @@ export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const token = localStorage.getItem('auth_token') || localStorage.getItem('user_token') || localStorage.getItem('token');
+  const sessionType = localStorage.getItem('session_type');
+  const sessionToken = localStorage.getItem('session_token');
+  let token = sessionToken;
+
+  if (!token) {
+    if (sessionType === 'admin') {
+      token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+    } else if (sessionType === 'user') {
+      token = localStorage.getItem('user_token');
+    } else {
+      token = localStorage.getItem('auth_token') || localStorage.getItem('user_token') || localStorage.getItem('token');
+    }
+  }
+
   let authReq = req;
 
-  if (token) {
+  if (token && !req.headers.has('Authorization')) {
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
