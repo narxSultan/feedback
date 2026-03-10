@@ -16,9 +16,10 @@ export class EventsService {
 
   private authHeaders() {
     const token = this.auth.getToken() || this.userAuth.getToken() || '';
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
+    if (!token) {
+      return new HttpHeaders();
+    }
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
   getEvents() {

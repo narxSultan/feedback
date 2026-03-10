@@ -5,13 +5,20 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-const SESSION_ERRORS = ['session mismatch', 'session expired', 'invalid session', 'unauthorized'];
+const SESSION_ERRORS = [
+  'session mismatch',
+  'session expired',
+  'invalid session',
+  'session not found',
+  'invalid token',
+  'unauthorized',
+];
 
 export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth_token') || localStorage.getItem('user_token') || localStorage.getItem('token');
   let authReq = req;
 
   if (token) {

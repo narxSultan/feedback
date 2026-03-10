@@ -12,9 +12,11 @@ export class AdminService {
   ) {}
 
   private authHeaders() {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.auth.getToken() || ''}`
-    });
+    const token = this.auth.getToken();
+    if (!token) {
+      return new HttpHeaders();
+    }
+    return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
 
   getUsers() {

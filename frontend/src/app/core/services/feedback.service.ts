@@ -17,10 +17,11 @@ export class FeedbackService {
   }
 
   getByEvent(eventId: number) {
+    const token = this.auth.getToken();
     return this.http.get<FeedbackItem[]>(`${this.api.baseUrl}/feedback/event/${eventId}`, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${this.auth.getToken() || ''}`
-      })
+      headers: token
+        ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+        : new HttpHeaders()
     });
   }
 }
