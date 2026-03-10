@@ -50,17 +50,26 @@ async function loginAdmin(req, res, next) {
 async function getMyProfile(req, res, next) {
   try {
     const adminId = req.admin?.id;
+    const isUserBackedAdmin = req.session?.account_type === 'user';
     if (!adminId) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const result = await pool.query(
-      `SELECT id, name, email, profile_image_url, created_at
-       FROM admins
-       WHERE id = $1
-       LIMIT 1`,
-      [adminId]
-    );
+    const result = isUserBackedAdmin
+      ? await pool.query(
+        `SELECT id, name, email, profile_image_url, created_at
+         FROM users
+         WHERE id = $1 AND role = 'admin'
+         LIMIT 1`,
+        [adminId]
+      )
+      : await pool.query(
+        `SELECT id, name, email, profile_image_url, created_at
+         FROM admins
+         WHERE id = $1
+         LIMIT 1`,
+        [adminId]
+      );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Admin profile not found' });
@@ -75,20 +84,30 @@ async function getMyProfile(req, res, next) {
 async function updateMyProfile(req, res, next) {
   try {
     const adminId = req.admin?.id;
+    const isUserBackedAdmin = req.session?.account_type === 'user';
     const { name, profileImageUrl } = req.body;
 
     if (!adminId) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const result = await pool.query(
-      `UPDATE admins
-       SET name = COALESCE($1, name),
-           profile_image_url = COALESCE($2, profile_image_url)
-       WHERE id = $3
-       RETURNING id, name, email, profile_image_url, created_at`,
-      [name || null, profileImageUrl || null, adminId]
-    );
+    const result = isUserBackedAdmin
+      ? await pool.query(
+        `UPDATE users
+         SET name = COALESCE($1, name),
+             profile_image_url = COALESCE($2, profile_image_url)
+         WHERE id = $3 AND role = 'admin'
+         RETURNING id, name, email, profile_image_url, created_at`,
+        [name || null, profileImageUrl || null, adminId]
+      )
+      : await pool.query(
+        `UPDATE admins
+         SET name = COALESCE($1, name),
+             profile_image_url = COALESCE($2, profile_image_url)
+         WHERE id = $3
+         RETURNING id, name, email, profile_image_url, created_at`,
+        [name || null, profileImageUrl || null, adminId]
+      );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Admin profile not found' });
@@ -103,6 +122,7 @@ async function updateMyProfile(req, res, next) {
 async function uploadAdminProfileImage(req, res, next) {
   try {
     const adminId = req.admin?.id;
+    const isUserBackedAdmin = req.session?.account_type === 'user';
 
     if (!adminId) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -113,13 +133,21 @@ async function uploadAdminProfileImage(req, res, next) {
     }
 
     const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    const result = await pool.query(
-      `UPDATE admins
-       SET profile_image_url = $1
-       WHERE id = $2
-       RETURNING id, name, email, profile_image_url, created_at`,
-      [fileUrl, adminId]
-    );
+    const result = isUserBackedAdmin
+      ? await pool.query(
+        `UPDATE users
+         SET profile_image_url = $1
+         WHERE id = $2 AND role = 'admin'
+         RETURNING id, name, email, profile_image_url, created_at`,
+        [fileUrl, adminId]
+      )
+      : await pool.query(
+        `UPDATE admins
+         SET profile_image_url = $1
+         WHERE id = $2
+         RETURNING id, name, email, profile_image_url, created_at`,
+        [fileUrl, adminId]
+      );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Admin profile not found' });
@@ -203,6 +231,7 @@ async function resetUserPassword(req, res, next) {
 async function changeAdminPassword(req, res, next) {
   try {
     const adminId = req.admin?.id;
+    const isUserBackedAdmin = req.session?.account_type === 'user';
     const { newPassword } = req.body;
 
     if (!adminId) {
@@ -215,12 +244,25 @@ async function changeAdminPassword(req, res, next) {
 
     const passwordHash = await bcrypt.hash(String(newPassword), 10);
 
-    await pool.query(
-      `UPDATE admins
-       SET password_hash = $1
-       WHERE id = $2`,
-      [passwordHash, adminId]
-    );
+    const result = isUserBackedAdmin
+      ? await pool.query(
+        `UPDATE users
+         SET password_hash = $1
+         WHERE id = $2 AND role = 'admin'
+         RETURNING id`,
+        [passwordHash, adminId]
+      )
+      : await pool.query(
+        `UPDATE admins
+         SET password_hash = $1
+         WHERE id = $2
+         RETURNING id`,
+        [passwordHash, adminId]
+      );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Admin profile not found' });
+    }
 
     return res.json({ message: 'Password updated successfully' });
   } catch (error) {
@@ -311,7 +353,7 @@ async function getAds(req, res, next) {
 
 async function createAd(req, res, next) {
   try {
-    const adminId = req.admin?.id;
+    const adminId = req.session?.account_type === 'admin' ? req.admin?.id : null;
     const { title, description, imageUrl, targetUrl, isActive, endDate } = req.body;
 
     if (!imageUrl) {
