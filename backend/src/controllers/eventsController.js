@@ -51,6 +51,23 @@ function normalizeFormSchema(input) {
 
 const allowedMaterialCategories = new Set(['presentation', 'video', 'audio', 'document', 'other']);
 
+async function resolveAdminTableId(req) {
+  if (req.session?.account_type === 'admin') {
+    return req.admin?.id || null;
+  }
+  if (req.session?.account_type === 'user' && req.admin?.id) {
+    const linked = await pool.query(
+      `SELECT id
+       FROM admins
+       WHERE linked_user_id = $1
+       LIMIT 1`,
+      [req.admin.id]
+    );
+    return linked.rows[0]?.id || null;
+  }
+  return null;
+}
+
 function sanitizeMaterialCategory(input) {
   const candidate = String(input || '').trim().toLowerCase();
   return allowedMaterialCategories.has(candidate) ? candidate : 'other';
@@ -212,6 +229,7 @@ async function createEvent(req, res, next) {
     }
 
     const normalizedFormSchema = normalizeFormSchema(customFormSchema);
+    const adminId = await resolveAdminTableId(req);
 
     let inserted = null;
     for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -230,7 +248,7 @@ async function createEvent(req, res, next) {
             location || null,
             imageUrl || null,
             code,
-            req.admin?.id || null,
+            adminId,
             normalizedFormSchema,
           ]
         );

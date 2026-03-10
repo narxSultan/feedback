@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS admins (
   name VARCHAR(100) NOT NULL,
   email VARCHAR(120) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
+  profile_image_url TEXT,
+  linked_user_id INTEGER UNIQUE,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -94,3 +96,16 @@ CREATE TABLE IF NOT EXISTS sessions (
   last_activity TIMESTAMP NOT NULL DEFAULT NOW(),
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'admins_linked_user_id_fk'
+  ) THEN
+    ALTER TABLE admins
+      ADD CONSTRAINT admins_linked_user_id_fk
+      FOREIGN KEY (linked_user_id) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;

@@ -3,6 +3,23 @@ const pool = require('../config/db');
 const sessionService = require('../services/sessionService');
 const { signAdminToken } = require('../utils/tokenHelper');
 
+async function resolveAdminTableId(req, db = pool) {
+  if (req.session?.account_type === 'admin') {
+    return req.admin?.id || null;
+  }
+  if (req.session?.account_type === 'user' && req.admin?.id) {
+    const linked = await db.query(
+      `SELECT id
+       FROM admins
+       WHERE linked_user_id = $1
+       LIMIT 1`,
+      [req.admin.id]
+    );
+    return linked.rows[0]?.id || null;
+  }
+  return null;
+}
+
 async function loginAdmin(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -105,12 +122,31 @@ async function updateMyProfile(req, res, next) {
          SET name = COALESCE($1, name),
              profile_image_url = COALESCE($2, profile_image_url)
          WHERE id = $3
-         RETURNING id, name, email, profile_image_url, created_at`,
+         RETURNING id, name, email, profile_image_url, linked_user_id, created_at`,
         [name || null, profileImageUrl || null, adminId]
       );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Admin profile not found' });
+    }
+
+    if (isUserBackedAdmin) {
+      await pool.query(
+        `UPDATE admins
+         SET name = $1,
+             email = $2,
+             profile_image_url = COALESCE($3, profile_image_url)
+         WHERE linked_user_id = $4`,
+        [result.rows[0].name, result.rows[0].email, profileImageUrl || null, adminId]
+      );
+    } else if (result.rows[0].linked_user_id) {
+      await pool.query(
+        `UPDATE users
+         SET name = $1,
+             profile_image_url = COALESCE($2, profile_image_url)
+         WHERE id = $3 AND role = 'admin'`,
+        [result.rows[0].name, profileImageUrl || null, result.rows[0].linked_user_id]
+      );
     }
 
     return res.json(result.rows[0]);
@@ -145,12 +181,28 @@ async function uploadAdminProfileImage(req, res, next) {
         `UPDATE admins
          SET profile_image_url = $1
          WHERE id = $2
-         RETURNING id, name, email, profile_image_url, created_at`,
+         RETURNING id, name, email, profile_image_url, linked_user_id, created_at`,
         [fileUrl, adminId]
       );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Admin profile not found' });
+    }
+
+    if (isUserBackedAdmin) {
+      await pool.query(
+        `UPDATE admins
+         SET profile_image_url = $1
+         WHERE linked_user_id = $2`,
+        [fileUrl, adminId]
+      );
+    } else if (result.rows[0].linked_user_id) {
+      await pool.query(
+        `UPDATE users
+         SET profile_image_url = $1
+         WHERE id = $2 AND role = 'admin'`,
+        [fileUrl, result.rows[0].linked_user_id]
+      );
     }
 
     return res.status(201).json(result.rows[0]);
@@ -173,6 +225,7 @@ async function getUsers(req, res, next) {
 }
 
 async function updateUserRole(req, res, next) {
+  const client = await pool.connect();
   try {
     const { userId } = req.params;
     const { role } = req.body;
@@ -181,21 +234,88 @@ async function updateUserRole(req, res, next) {
       return res.status(400).json({ message: "role must be 'user' or 'admin'" });
     }
 
-    const result = await pool.query(
+    await client.query('BEGIN');
+
+    const result = await client.query(
       `UPDATE users
        SET role = $1
        WHERE id = $2
-       RETURNING id, name, email, role`,
+       RETURNING id, name, email, role, password_hash, profile_image_url`,
       [role, userId]
     );
 
     if (!result.rows.length) {
+      await client.query('ROLLBACK');
       return res.status(404).json({ message: 'User not found' });
     }
 
-    return res.json(result.rows[0]);
+    const user = result.rows[0];
+
+    if (role === 'admin') {
+      const linkedByUser = await client.query(
+        `SELECT id FROM admins WHERE linked_user_id = $1 LIMIT 1`,
+        [user.id]
+      );
+
+      if (linkedByUser.rows.length) {
+        await client.query(
+          `UPDATE admins
+           SET name = $1,
+               email = $2,
+               password_hash = $3,
+               profile_image_url = COALESCE($4, profile_image_url)
+           WHERE id = $5`,
+          [user.name, user.email, user.password_hash, user.profile_image_url || null, linkedByUser.rows[0].id]
+        );
+      } else {
+        const linkedByEmail = await client.query(
+          `SELECT id FROM admins WHERE LOWER(email) = LOWER($1) LIMIT 1`,
+          [user.email]
+        );
+
+        if (linkedByEmail.rows.length) {
+          await client.query(
+            `UPDATE admins
+             SET linked_user_id = $1,
+                 name = $2,
+                 password_hash = $3,
+                 profile_image_url = COALESCE($4, profile_image_url)
+             WHERE id = $5`,
+            [user.id, user.name, user.password_hash, user.profile_image_url || null, linkedByEmail.rows[0].id]
+          );
+        } else {
+          await client.query(
+            `INSERT INTO admins (name, email, password_hash, profile_image_url, linked_user_id)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [user.name, user.email, user.password_hash, user.profile_image_url || null, user.id]
+          );
+        }
+      }
+    } else {
+      await client.query(
+        `DELETE FROM admins
+         WHERE linked_user_id = $1`,
+        [user.id]
+      );
+    }
+
+    await client.query('COMMIT');
+
+    return res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
   } catch (error) {
+    try {
+      await client.query('ROLLBACK');
+    } catch (_) {
+      // Ignore rollback failure; surface original error.
+    }
     return next(error);
+  } finally {
+    client.release();
   }
 }
 
@@ -221,6 +341,13 @@ async function resetUserPassword(req, res, next) {
     if (!result.rows.length) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    await pool.query(
+      `UPDATE admins
+       SET password_hash = $1
+       WHERE linked_user_id = $2`,
+      [passwordHash, userId]
+    );
 
     return res.json({ message: 'User password reset successfully', user: result.rows[0] });
   } catch (error) {
@@ -256,12 +383,28 @@ async function changeAdminPassword(req, res, next) {
         `UPDATE admins
          SET password_hash = $1
          WHERE id = $2
-         RETURNING id`,
+         RETURNING id, linked_user_id`,
         [passwordHash, adminId]
       );
 
     if (!result.rows.length) {
       return res.status(404).json({ message: 'Admin profile not found' });
+    }
+
+    if (isUserBackedAdmin) {
+      await pool.query(
+        `UPDATE admins
+         SET password_hash = $1
+         WHERE linked_user_id = $2`,
+        [passwordHash, adminId]
+      );
+    } else if (result.rows[0].linked_user_id) {
+      await pool.query(
+        `UPDATE users
+         SET password_hash = $1
+         WHERE id = $2 AND role = 'admin'`,
+        [passwordHash, result.rows[0].linked_user_id]
+      );
     }
 
     return res.json({ message: 'Password updated successfully' });
@@ -353,7 +496,7 @@ async function getAds(req, res, next) {
 
 async function createAd(req, res, next) {
   try {
-    const adminId = req.session?.account_type === 'admin' ? req.admin?.id : null;
+    const adminId = await resolveAdminTableId(req);
     const { title, description, imageUrl, targetUrl, isActive, endDate } = req.body;
 
     if (!imageUrl) {

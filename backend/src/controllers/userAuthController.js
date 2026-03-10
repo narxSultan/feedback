@@ -63,6 +63,50 @@ async function loginUser(req, res, next) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
+      if (user.role === 'admin') {
+        let adminResult = await pool.query(
+          `SELECT id, name, email, profile_image_url
+           FROM admins
+           WHERE linked_user_id = $1
+           LIMIT 1`,
+          [user.id]
+        );
+
+        if (!adminResult.rows.length) {
+          adminResult = await pool.query(
+            `INSERT INTO admins (name, email, password_hash, profile_image_url, linked_user_id)
+             VALUES ($1, $2, $3, $4, $5)
+             ON CONFLICT (email)
+             DO UPDATE SET
+               linked_user_id = COALESCE(admins.linked_user_id, EXCLUDED.linked_user_id),
+               name = EXCLUDED.name,
+               password_hash = EXCLUDED.password_hash,
+               profile_image_url = COALESCE(EXCLUDED.profile_image_url, admins.profile_image_url)
+             RETURNING id, name, email, profile_image_url`,
+            [user.name, user.email, user.password_hash, user.profile_image_url || null, user.id]
+          );
+        }
+
+        const admin = adminResult.rows[0];
+        const sessionId = await sessionService.createSession({
+          accountType: 'admin',
+          accountId: admin.id,
+          deviceInfo: req.headers['user-agent'] || null
+        });
+
+        return res.json({
+          token: signAdminToken(admin, sessionId),
+          user: {
+            id: admin.id,
+            name: admin.name,
+            email: admin.email,
+            organization: user.organization,
+            role: 'admin',
+            profile_image_url: admin.profile_image_url,
+          },
+        });
+      }
+
       const sessionId = await sessionService.createSession({
         accountType: 'user',
         accountId: user.id,

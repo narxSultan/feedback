@@ -8,6 +8,17 @@ async function start() {
   try {
     await pool.query('SELECT 1');
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS admins (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(120) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        profile_image_url TEXT,
+        linked_user_id INTEGER UNIQUE,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         name VARCHAR(120) NOT NULL,
@@ -19,11 +30,52 @@ async function start() {
         created_at TIMESTAMP DEFAULT NOW()
       )
     `);
+    await pool.query("ALTER TABLE admins ADD COLUMN IF NOT EXISTS linked_user_id INTEGER");
+    await pool.query("ALTER TABLE admins ADD COLUMN IF NOT EXISTS profile_image_url TEXT");
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1
+          FROM pg_constraint
+          WHERE conname = 'admins_linked_user_id_unique'
+        ) THEN
+          ALTER TABLE admins
+            ADD CONSTRAINT admins_linked_user_id_unique UNIQUE (linked_user_id);
+        END IF;
+      END $$;
+    `);
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1
+          FROM pg_constraint
+          WHERE conname = 'admins_linked_user_id_fk'
+        ) THEN
+          ALTER TABLE admins
+            ADD CONSTRAINT admins_linked_user_id_fk
+            FOREIGN KEY (linked_user_id) REFERENCES users(id) ON DELETE SET NULL;
+        END IF;
+      END $$;
+    `);
+    await pool.query(`
+      UPDATE admins a
+      SET linked_user_id = u.id
+      FROM users u
+      WHERE a.linked_user_id IS NULL
+        AND u.role = 'admin'
+        AND LOWER(a.email) = LOWER(u.email)
+        AND NOT EXISTS (
+          SELECT 1
+          FROM admins ax
+          WHERE ax.linked_user_id = u.id
+        )
+    `);
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'user'");
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image_url TEXT");
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_hash TEXT");
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires_at TIMESTAMP");
-    await pool.query("ALTER TABLE admins ADD COLUMN IF NOT EXISTS profile_image_url TEXT");
     await pool.query('ALTER TABLE events ADD COLUMN IF NOT EXISTS image_url TEXT');
     await pool.query('ALTER TABLE events ADD COLUMN IF NOT EXISTS end_date DATE');
     await pool.query('ALTER TABLE events ADD COLUMN IF NOT EXISTS created_by_user INTEGER REFERENCES users(id) ON DELETE SET NULL');
