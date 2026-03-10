@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const pool = require('../config/db');
-const { sendPasswordResetEmail } = require('../utils/emailService');
 const sessionService = require('../services/sessionService');
 const { signUserToken, signAdminToken } = require('../utils/tokenHelper');
 
@@ -157,21 +156,11 @@ async function forgotPassword(req, res, next) {
       [tokenHash, expiresAt, user.id]
     );
 
-    const frontendBase = process.env.FRONTEND_BASE_URL || 'http://localhost:4200';
-    const resetLink = `${frontendBase}/reset-password?token=${rawToken}`;
-
-    const responsePayload = {
+    return res.json({
       message: 'Email verified. Set your new password.',
       emailExists: true,
       resetToken: rawToken,
-    };
-
-    const emailResult = await sendPasswordResetEmail(user.email, resetLink);
-    if (!emailResult.sent && process.env.NODE_ENV !== 'production') {
-      return res.json({ ...responsePayload, resetLink });
-    }
-
-    return res.json(responsePayload);
+    });
   } catch (error) {
     return next(error);
   }

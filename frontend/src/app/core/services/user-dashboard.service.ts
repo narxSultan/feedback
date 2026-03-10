@@ -117,7 +117,7 @@ export class UserDashboardService {
   }
 
   forgotPassword(email: string) {
-    return this.http.post<{ message: string; resetLink?: string; emailExists?: boolean; resetToken?: string }>(
+    return this.http.post<{ message: string; emailExists?: boolean; resetToken?: string }>(
       `${this.api.baseUrl}/users/forgot-password`,
       { email }
     );
