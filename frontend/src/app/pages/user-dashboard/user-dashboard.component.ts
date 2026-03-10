@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { UserAuthService } from '../../core/services/user-auth.service';
 import { UserDashboardService } from '../../core/services/user-dashboard.service';
 import { EventsService } from '../../core/services/events.service';
+import { LanguageService } from '../../core/services/language.service';
 import { EventFeedbackQuestion, EventItem, EventMaterial, UserFeedbackHistoryItem, UserPayment, UserProfile } from '../../core/models/types';
 
 @Component({
@@ -118,11 +119,20 @@ export class UserDashboardPageComponent implements OnInit {
   constructor(
     private auth: UserAuthService,
     private dashboard: UserDashboardService,
-    private eventsService: EventsService
+    private eventsService: EventsService,
+    private languageService: LanguageService
   ) {}
 
   get userName() {
     return this.auth.getUserName();
+  }
+
+  get isSwahili(): boolean {
+    return this.languageService.isSwahili;
+  }
+
+  toggleLanguage() {
+    this.languageService.toggleLanguage();
   }
 
   get isAdminRole() {
@@ -157,10 +167,10 @@ export class UserDashboardPageComponent implements OnInit {
     const colorPalette = ['#f97316', '#7dd3fc', '#22c55e', '#a78bfa', '#f472b6', '#facc15', '#94a3b8'];
 
     return [
-      { label: 'Active + Feedback', value: activeWithFeedback, color: colorPalette[0] },
-      { label: 'Active + No Feedback', value: activeNoFeedback, color: colorPalette[1] },
-      { label: 'Expired + Feedback', value: expiredWithFeedback, color: colorPalette[2] },
-      { label: 'Expired + No Feedback', value: expiredNoFeedback, color: colorPalette[3] },
+      { label: this.isSwahili ? 'Active + Maoni' : 'Active + Feedback', value: activeWithFeedback, color: colorPalette[0] },
+      { label: this.isSwahili ? 'Active + Bila Maoni' : 'Active + No Feedback', value: activeNoFeedback, color: colorPalette[1] },
+      { label: this.isSwahili ? 'Expired + Maoni' : 'Expired + Feedback', value: expiredWithFeedback, color: colorPalette[2] },
+      { label: this.isSwahili ? 'Expired + Bila Maoni' : 'Expired + No Feedback', value: expiredNoFeedback, color: colorPalette[3] },
     ].filter((segment) => segment.value > 0);
   }
 

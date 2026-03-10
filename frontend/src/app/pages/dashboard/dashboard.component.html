@@ -54,10 +54,18 @@
       </nav>
 
       <div class="mt-6 space-y-2 border-t border-green-100 pt-4">
-        <button (click)="toggleLanguage()" class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm font-medium text-green-800 transition hover:bg-green-50">
+        <button
+          (click)="toggleLanguage()"
+          class="w-full rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-800 transition hover:bg-green-100"
+        >
           <span class="inline-flex items-center gap-2">
             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h8M8 3v2m2 0a7 7 0 0 1-7 7m0 0 3 3m-3-3-3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 21h8m-4-9v9m-4-5h8"/></svg>
             {{ isSwahili ? 'English' : 'Swahili' }}
+            <img
+              [src]="isSwahili ? 'https://flagcdn.com/w20/gb.png' : 'https://flagcdn.com/w20/tz.png'"
+              [alt]="isSwahili ? 'Switch to English' : 'Switch to Swahili'"
+              class="h-3 w-5 rounded-sm object-cover"
+            />
           </span>
         </button>
         <button (click)="logout()" class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm font-medium text-green-800 transition hover:bg-green-50">
