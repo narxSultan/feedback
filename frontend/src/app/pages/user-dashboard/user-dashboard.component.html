@@ -1,8 +1,8 @@
-<div class="liquid-dashboard min-h-screen bg-gradient-to-b from-green-50/50 to-white px-4 py-8 sm:px-6 lg:px-8 flex flex-col">
+<div class="liquid-dashboard min-h-screen bg-gradient-to-b from-slate-100/80 to-sky-50/30 px-4 py-8 sm:px-6 lg:px-8 flex flex-col">
   <div *ngIf="showToastOverlay" class="fixed right-4 top-4 z-50">
     <div
       class="rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg"
-      [class.bg-green-600]="toastType === 'success'"
+      [class.bg-sky-700]="toastType === 'success'"
       [class.bg-red-600]="toastType === 'error'"
     >
       {{ toastMessage }}
@@ -10,54 +10,51 @@
   </div>
 
   <div class="mx-auto grid w-full max-w-7xl flex-1 gap-6 lg:grid-cols-[280px_1fr]">
-    <aside class="glass-panel h-fit rounded-3xl border border-green-100 bg-white p-5 shadow-soft lg:sticky lg:top-6">
-      <div class="mb-6 flex items-center gap-3 rounded-2xl bg-green-50 p-3">
+    <aside class="glass-panel h-fit rounded-3xl border border-slate-200 bg-white p-5 shadow-soft lg:sticky lg:top-6">
+      <div class="mb-6 flex items-center gap-3 rounded-2xl bg-slate-100 p-3">
         <img
           [src]="profile?.profile_image_url || 'assets/logo.png'"
           alt="Profile"
-          class="h-12 w-12 rounded-full object-cover ring-2 ring-green-200"
+          class="h-12 w-12 rounded-full object-cover ring-2 ring-sky-200"
         />
         <div>
-          <p class="text-xs text-green-700">{{ isSwahili ? 'Akaunti' : 'Account' }}</p>
-          <p class="text-sm font-semibold text-green-900">{{ userName }}</p>
-          <p class="text-xs text-green-700 uppercase">{{ profile?.role || userRole }}</p>
+          <p class="text-xs text-slate-600">{{ isSwahili ? 'Akaunti' : 'Account' }}</p>
+          <p class="text-sm font-semibold text-slate-900">{{ userName }}</p>
+          <p class="text-xs text-slate-600 uppercase">{{ profile?.role || userRole }}</p>
         </div>
       </div>
 
       <nav class="space-y-1.5 text-sm">
-        <button type="button" (click)="setActiveSection('overview')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'overview'">
+        <button type="button" (click)="setActiveSection('overview')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'overview'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-10.5Z"/></svg><span>{{ isSwahili ? 'Muhtasari' : 'Overview' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('create-event')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'create-event'">
+        <button type="button" (click)="setActiveSection('create-event')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'create-event'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" d="M8 2v4M16 2v4M3 10h18"/></svg><span>{{ isSwahili ? 'Tengeneza Event' : 'Create Event' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('events-feedback')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'events-feedback'">
+        <button type="button" (click)="setActiveSection('events-feedback')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'events-feedback'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg><span>{{ isSwahili ? 'Matukio na Maoni' : 'Events & Feedback' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('feedback-history')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'feedback-history'">
+        <button type="button" (click)="setActiveSection('feedback-history')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'feedback-history'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/></svg><span>{{ isSwahili ? 'Historia ya Maoni' : 'Feedback History' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('payments')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'payments'">
+        <button type="button" (click)="setActiveSection('payments')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'payments'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg><span>{{ isSwahili ? 'Malipo' : 'Payments' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('payments-history')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'payments-history'">
+        <button type="button" (click)="setActiveSection('payments-history')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'payments-history'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3h9l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path stroke-linecap="round" d="M16 3v4h4M9 12h6M9 16h6"/></svg><span>{{ isSwahili ? 'Historia ya Malipo' : 'Payment History' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('materials')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'materials'">
+        <button type="button" (click)="setActiveSection('materials')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'materials'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4z"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 10h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 14h8"/></svg><span>{{ isSwahili ? 'Vifaa vya Event' : 'Event Materials' }}</span>
         </button>
-        <button type="button" (click)="setActiveSection('profile')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'profile'">
-          <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path stroke-linecap="round" d="M4 20a8 8 0 0 1 16 0"/></svg><span>{{ isSwahili ? 'Profile' : 'Profile' }}</span>
-        </button>
-        <button type="button" (click)="setActiveSection('security')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-green-800 transition hover:bg-green-50" [class.bg-green-100]="activeSection === 'security'">
+        <button type="button" (click)="setActiveSection('security')" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-100" [class.bg-sky-100]="activeSection === 'security'">
           <svg aria-hidden="true" class="h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg><span>{{ isSwahili ? 'Usalama' : 'Security' }}</span>
         </button>
       </nav>
 
-      <div class="mt-6 space-y-2 border-t border-green-100 pt-4">
+      <div class="mt-6 space-y-2 border-t border-slate-200 pt-4">
         <button
           (click)="toggleLanguage()"
-          class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm font-medium text-green-800 transition hover:bg-green-50"
+          class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
         >
           <span class="inline-flex items-center gap-2">
             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5h8M8 3v2m2 0a7 7 0 0 1-7 7m0 0 3 3m-3-3-3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 21h8m-4-9v9m-4-5h8"/></svg>
@@ -69,8 +66,8 @@
             />
           </span>
         </button>
-        <a *ngIf="isAdminRole" routerLink="/admin-users" class="block rounded-xl border border-green-200 px-4 py-2 text-center text-sm font-medium text-green-800 transition hover:bg-green-50">{{ isSwahili ? 'Simamia Watumiaji' : 'User Manage' }}</a>
-        <button (click)="logout()" class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm font-medium text-green-800 transition hover:bg-green-50">
+        <a *ngIf="isAdminRole" routerLink="/admin-users" class="block rounded-xl border border-slate-300 px-4 py-2 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-100">{{ isSwahili ? 'Simamia Watumiaji' : 'User Manage' }}</a>
+        <button (click)="logout()" class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
           <span class="inline-flex items-center gap-2">
             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17l5-5-5-5"/><path stroke-linecap="round" d="M20 12H9"/><path stroke-linecap="round" d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/></svg>
             {{ isSwahili ? 'Toka' : 'Logout' }}
@@ -80,52 +77,52 @@
     </aside>
 
     <main class="space-y-6">
-      <section class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p class="text-sm text-green-700">{{ isSwahili ? 'Karibu tena' : 'Welcome back' }}</p>
-            <h1 class="text-3xl font-semibold text-green-900">{{ userName }} {{ isSwahili ? 'Dashibodi' : 'Dashboard' }}</h1>
-            <p class="text-sm text-green-700">{{ isSwahili ? 'Simamia matukio, fuatilia maoni, na dhibiti malipo.' : 'Manage events, track feedback, and handle payments.' }}</p>
+            <p class="text-sm text-slate-600">{{ isSwahili ? 'Karibu tena' : 'Welcome back' }}</p>
+            <h1 class="text-3xl font-semibold text-slate-900">{{ userName }} {{ isSwahili ? 'Dashibodi' : 'Dashboard' }}</h1>
+            <p class="text-sm text-slate-600">{{ isSwahili ? 'Simamia matukio, fuatilia maoni, na dhibiti malipo.' : 'Manage events, track feedback, and handle payments.' }}</p>
           </div>
           <div class="grid grid-cols-2 gap-2 sm:flex sm:gap-3">
-            <div class="rounded-xl bg-green-50 px-4 py-2 text-center">
-              <p class="text-xs text-green-700">{{ isSwahili ? 'Matukio' : 'Events' }}</p>
-              <p class="text-lg font-semibold text-green-900">{{ events.length }}</p>
+            <div class="rounded-xl bg-slate-100 px-4 py-2 text-center">
+              <p class="text-xs text-slate-600">{{ isSwahili ? 'Matukio' : 'Events' }}</p>
+              <p class="text-lg font-semibold text-slate-900">{{ events.length }}</p>
             </div>
-            <div class="rounded-xl bg-green-50 px-4 py-2 text-center">
-              <p class="text-xs text-green-700">{{ isSwahili ? 'Maoni' : 'Feedback' }}</p>
-              <p class="text-lg font-semibold text-green-900">{{ feedbackHistory.length }}</p>
+            <div class="rounded-xl bg-slate-100 px-4 py-2 text-center">
+              <p class="text-xs text-slate-600">{{ isSwahili ? 'Maoni' : 'Feedback' }}</p>
+              <p class="text-lg font-semibold text-slate-900">{{ feedbackHistory.length }}</p>
             </div>
           </div>
         </div>
-        <p *ngIf="message" class="mt-4 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">{{ message }}</p>
+        <p *ngIf="message" class="mt-4 rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-700">{{ message }}</p>
       </section>
 
-      <section *ngIf="activeSection === 'overview'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
-        <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Muhtasari' : 'Overview' }}</h2>
-        <p class="mt-2 text-sm text-green-700">{{ isSwahili ? 'Tumia menu ya kushoto kusimamia matukio, malipo, profile, na usalama.' : 'Use the sidebar to manage events, payments, profile, and security settings.' }}</p>
+      <section *ngIf="activeSection === 'overview'" class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-slate-900">{{ isSwahili ? 'Muhtasari' : 'Overview' }}</h2>
+        <p class="mt-2 text-sm text-slate-600">{{ isSwahili ? 'Tumia menu ya kushoto kusimamia matukio, malipo, profile, na usalama.' : 'Use the sidebar to manage events, payments, profile, and security settings.' }}</p>
 
         <div *ngIf="hasActiveOverviewData; else noActiveOverviewUser" class="mt-5 grid gap-4 lg:grid-cols-2">
-          <article class="rounded-2xl border border-green-100 bg-green-50/40 p-4">
-            <p class="text-sm font-semibold text-green-900">{{ isSwahili ? 'Muhtasari wa Matukio' : 'Events Summary' }}</p>
+          <article class="rounded-2xl border border-slate-200 bg-slate-100/70 p-4">
+            <p class="text-sm font-semibold text-slate-900">{{ isSwahili ? 'Muhtasari wa Matukio' : 'Events Summary' }}</p>
             <div class="mt-3 grid grid-cols-2 gap-3">
               <div class="rounded-xl bg-white px-4 py-3 text-center">
-                <p class="text-xs text-green-700">{{ isSwahili ? 'Matukio Active' : 'Active Events' }}</p>
-                <p class="text-2xl font-bold text-green-900">{{ activeEventsCount }}</p>
+                <p class="text-xs text-slate-600">{{ isSwahili ? 'Matukio Active' : 'Active Events' }}</p>
+                <p class="text-2xl font-bold text-slate-900">{{ activeEventsCount }}</p>
               </div>
               <div class="rounded-xl bg-white px-4 py-3 text-center">
-                <p class="text-xs text-green-700">{{ isSwahili ? 'Jumla ya Matukio' : 'Total Events' }}</p>
-                <p class="text-2xl font-bold text-green-900">{{ events.length }}</p>
+                <p class="text-xs text-slate-600">{{ isSwahili ? 'Jumla ya Matukio' : 'Total Events' }}</p>
+                <p class="text-2xl font-bold text-slate-900">{{ events.length }}</p>
               </div>
             </div>
           </article>
 
-          <article class="rounded-2xl border border-green-100 bg-white p-4">
-            <p class="text-sm font-semibold text-green-900">{{ isSwahili ? 'Grafu ya Matukio' : 'Events Graph' }}</p>
-            <div class="mt-4 flex flex-col items-center gap-4 rounded-xl bg-green-50/60 px-4 py-4">
+          <article class="rounded-2xl border border-slate-200 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-900">{{ isSwahili ? 'Grafu ya Matukio' : 'Events Graph' }}</p>
+            <div class="mt-4 flex flex-col items-center gap-4 rounded-xl bg-slate-100/80 px-4 py-4">
               <div class="h-44 w-44 rounded-full border-4 border-white shadow" [style]="eventPieStyle"></div>
               <div class="grid w-full gap-2 sm:grid-cols-2">
-                <div *ngFor="let segment of eventPieSegments" class="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs text-green-900">
+                <div *ngFor="let segment of eventPieSegments" class="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs text-slate-900">
                   <span class="h-3 w-3 rounded-full" [style.background]="segment.color"></span>
                   <span class="font-medium">{{ segment.label }}</span>
                   <span class="ml-auto font-semibold">{{ segment.value }}</span>
@@ -136,47 +133,47 @@
         </div>
 
         <ng-template #noActiveOverviewUser>
-          <p class="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          <p class="mt-4 rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700">
             {{ isSwahili ? 'Bado hakuna matukio active. Grafu itaonekana pindi data active itakapopatikana.' : 'No active events yet. Graph/chart will appear when active events are available.' }}
           </p>
         </ng-template>
       </section>
 
-      <section *ngIf="activeSection === 'create-event'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
-        <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Tengeneza Event' : 'Create Event' }}</h2>
+      <section *ngIf="activeSection === 'create-event'" class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-slate-900">{{ isSwahili ? 'Tengeneza Event' : 'Create Event' }}</h2>
         <form class="liquid-event-form mt-4 grid gap-3" (ngSubmit)="createEvent()">
-          <input type="text" [(ngModel)]="eventForm.title" name="title" required [placeholder]="isSwahili ? 'Jina la event' : 'Event title'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-          <textarea [(ngModel)]="eventForm.description" name="description" rows="3" [placeholder]="isSwahili ? 'Maelezo' : 'Description'" class="w-full rounded-xl border border-green-200 px-4 py-3"></textarea>
+          <input type="text" [(ngModel)]="eventForm.title" name="title" required [placeholder]="isSwahili ? 'Jina la event' : 'Event title'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+          <textarea [(ngModel)]="eventForm.description" name="description" rows="3" [placeholder]="isSwahili ? 'Maelezo' : 'Description'" class="w-full rounded-xl border border-slate-300 px-4 py-3"></textarea>
           <div class="grid gap-3 sm:grid-cols-2">
-            <input type="date" [(ngModel)]="eventForm.eventDate" name="eventDate" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-            <input type="date" [(ngModel)]="eventForm.endDate" name="endDate" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+            <input type="date" [(ngModel)]="eventForm.eventDate" name="eventDate" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+            <input type="date" [(ngModel)]="eventForm.endDate" name="endDate" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
           </div>
           <div class="grid gap-3 sm:grid-cols-2">
-            <input type="text" [(ngModel)]="eventForm.location" name="location" [placeholder]="isSwahili ? 'Mahali' : 'Location'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+            <input type="text" [(ngModel)]="eventForm.location" name="location" [placeholder]="isSwahili ? 'Mahali' : 'Location'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
           </div>
-          <input type="file" name="eventImageFile" accept="image/*" (change)="onEventImageSelected($event)" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-          <p class="text-xs text-green-700">{{ isSwahili ? 'Inakubali: JPG, PNG, WEBP. Kiwango cha juu ' + eventImageMaxMb + 'MB.' : 'Accepted: JPG, PNG, WEBP. Max ' + eventImageMaxMb + 'MB.' }}</p>
-          <input type="url" [(ngModel)]="eventForm.imageUrl" name="imageUrl" [placeholder]="isSwahili ? 'au URL ya picha ya event' : 'or Event image URL'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+          <input type="file" name="eventImageFile" accept="image/*" (change)="onEventImageSelected($event)" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+          <p class="text-xs text-slate-600">{{ isSwahili ? 'Inakubali: JPG, PNG, WEBP. Kiwango cha juu ' + eventImageMaxMb + 'MB.' : 'Accepted: JPG, PNG, WEBP. Max ' + eventImageMaxMb + 'MB.' }}</p>
+          <input type="url" [(ngModel)]="eventForm.imageUrl" name="imageUrl" [placeholder]="isSwahili ? 'au URL ya picha ya event' : 'or Event image URL'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
 
-          <div class="liquid-event-subpanel rounded-2xl border border-green-100 bg-green-50/40 p-4">
-            <label class="inline-flex items-center gap-2 text-sm font-medium text-green-900">
+          <div class="liquid-event-subpanel rounded-2xl border border-slate-200 bg-slate-100/70 p-4">
+            <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-900">
               <input type="checkbox" [(ngModel)]="useCustomForm" name="useCustomFormUser" />
               <span>{{ isSwahili ? 'Tumia fomu maalum ya maoni kwa event hii' : 'Use custom feedback form for this event' }}</span>
             </label>
 
             <div *ngIf="useCustomForm" class="mt-3 grid gap-3">
-              <input type="text" [(ngModel)]="questionForm.label" name="questionLabelUser" [placeholder]="isSwahili ? 'Swali' : 'Question label'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
+              <input type="text" [(ngModel)]="questionForm.label" name="questionLabelUser" [placeholder]="isSwahili ? 'Swali' : 'Question label'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
               <div class="grid gap-3 sm:grid-cols-3">
-                <select [(ngModel)]="questionForm.type" name="questionTypeUser" class="rounded-xl border border-green-200 px-4 py-3">
+                <select [(ngModel)]="questionForm.type" name="questionTypeUser" class="rounded-xl border border-slate-300 px-4 py-3">
                   <option value="text">{{ isSwahili ? 'Jibu la maandishi' : 'Text answer' }}</option>
                   <option value="radio">{{ isSwahili ? 'Chaguo moja (radio)' : 'Single choice (radio)' }}</option>
                   <option value="checkbox">{{ isSwahili ? 'Machaguo mengi (checkbox)' : 'Multi choice (checkbox)' }}</option>
                 </select>
-                <label class="inline-flex items-center gap-2 rounded-xl border border-green-200 px-4 py-3 text-sm text-green-800">
+                <label class="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-700">
                   <input type="checkbox" [(ngModel)]="questionForm.required" name="questionRequiredUser" />
                   {{ isSwahili ? 'Lazima' : 'Required' }}
                 </label>
-                <button type="button" (click)="addCustomQuestion()" class="rounded-xl border border-green-300 px-4 py-3 text-sm font-semibold text-green-900 hover:bg-green-100">
+                <button type="button" (click)="addCustomQuestion()" class="rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-sky-100">
                   <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>{{ isSwahili ? 'Ongeza Swali' : 'Add Question' }}</span>
                 </button>
               </div>
@@ -186,103 +183,103 @@
                 [(ngModel)]="questionForm.optionsText"
                 name="questionOptionsUser"
                 [placeholder]="isSwahili ? 'Chaguo mbalimbali, yatenganishwe kwa koma' : 'Options separated by comma'"
-                class="w-full rounded-xl border border-green-200 px-4 py-3"
+                class="w-full rounded-xl border border-slate-300 px-4 py-3"
               />
               <div class="space-y-2">
-                <article *ngFor="let question of customQuestions; let i = index" class="flex items-start justify-between gap-3 rounded-xl border border-green-100 bg-white p-3">
+                <article *ngFor="let question of customQuestions; let i = index" class="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3">
                   <div>
-                    <p class="text-sm font-semibold text-green-900">{{ i + 1 }}. {{ question.label }}</p>
-                    <p class="text-xs text-green-700">{{ question.type }} <span *ngIf="question.required">• {{ isSwahili ? 'lazima' : 'required' }}</span></p>
-                    <p *ngIf="question.options?.length" class="mt-1 text-xs text-green-700">{{ question.options?.join(', ') }}</p>
+                    <p class="text-sm font-semibold text-slate-900">{{ i + 1 }}. {{ question.label }}</p>
+                    <p class="text-xs text-slate-600">{{ question.type }} <span *ngIf="question.required">• {{ isSwahili ? 'lazima' : 'required' }}</span></p>
+                    <p *ngIf="question.options?.length" class="mt-1 text-xs text-slate-600">{{ question.options?.join(', ') }}</p>
                   </div>
                   <button type="button" (click)="removeCustomQuestion(i)" class="rounded-lg border border-red-300 px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-50">
                     <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>{{ isSwahili ? 'Ondoa' : 'Remove' }}</span>
                   </button>
                 </article>
-                <p *ngIf="!customQuestions.length" class="text-xs text-green-700">{{ isSwahili ? 'Bado hakuna maswali maalum. Fomu ya kawaida itatumika.' : 'No custom questions yet. Default feedback form will be used.' }}</p>
+                <p *ngIf="!customQuestions.length" class="text-xs text-slate-600">{{ isSwahili ? 'Bado hakuna maswali maalum. Fomu ya kawaida itatumika.' : 'No custom questions yet. Default feedback form will be used.' }}</p>
               </div>
             </div>
           </div>
 
-          <button type="submit" class="w-fit rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400">
+          <button type="submit" class="w-fit rounded-xl bg-sky-200 px-5 py-3 font-semibold text-slate-900 hover:bg-sky-300">
             <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>{{ isSwahili ? 'Tengeneza Event' : 'Create Event' }}</span>
           </button>
         </form>
-        <p *ngIf="generatedCode" class="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-semibold text-green-900">
+        <p *ngIf="generatedCode" class="mt-4 rounded-xl border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900">
           {{ isSwahili ? 'Msimbo wa Event uliotengenezwa:' : 'Generated Event Code:' }} {{ generatedCode }}
         </p>
         <button
           *ngIf="generatedCode"
           type="button"
           (click)="downloadGeneratedEventPdf()"
-          class="mt-3 rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-green-900"
+          class="mt-3 rounded-xl bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900"
         >
           <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Pakua PDF (Code + QR)' : 'Download PDF (Code + QR)' }}</span>
         </button>
       </section>
 
-      <section *ngIf="activeSection === 'events-feedback'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
-        <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Matukio na Maoni' : 'Events & Feedback' }}</h2>
+      <section *ngIf="activeSection === 'events-feedback'" class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-slate-900">{{ isSwahili ? 'Matukio na Maoni' : 'Events & Feedback' }}</h2>
         <div class="mt-4 space-y-3">
-          <article *ngFor="let event of events" class="rounded-2xl border border-green-100 p-4">
+          <article *ngFor="let event of events" class="rounded-2xl border border-slate-200 p-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="font-semibold text-green-900">
+              <p class="font-semibold text-slate-900">
                 {{ event.title }}
-                <span class="ml-2 rounded bg-green-50 px-2 py-1 text-xs text-green-800">{{ event.event_code }}</span>
+                <span class="ml-2 rounded bg-slate-100 px-2 py-1 text-xs text-slate-700">{{ event.event_code }}</span>
                 <span *ngIf="isExpired(event)" class="ml-2 rounded bg-red-100 px-2 py-1 text-xs text-red-700">{{ isSwahili ? 'Imeisha muda' : 'Expired' }}</span>
               </p>
               <div class="flex flex-wrap items-center gap-2">
-                <button (click)="viewEventFeedback(event.id)" class="rounded-lg border border-green-200 px-3 py-1 text-xs font-medium text-green-800 hover:bg-green-50">
+                <button (click)="viewEventFeedback(event.id)" class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100">
                   <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M8 10h8M8 14h5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>{{ selectedEventId === event.id ? (isSwahili ? 'Funga Maoni' : 'Close Feedback') : (isSwahili ? 'Ona Maoni' : 'View Feedback') }}</span>
                 </button>
-                <button (click)="downloadEventPdf(event)" class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Pakua QR PDF' : 'Download QR PDF' }}</span></button>
+                <button (click)="downloadEventPdf(event)" class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Pakua QR PDF' : 'Download QR PDF' }}</span></button>
                 <button (click)="removeEventImage(event)" class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>{{ isSwahili ? 'Ondoa Picha' : 'Remove Image' }}</span></button>
                 <button (click)="startUserEventEdit(event)" class="rounded-lg border border-amber-300 px-3 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>{{ isSwahili ? 'Hariri Event' : 'Edit Event' }}</span></button>
                 <button (click)="deleteEvent(event)" class="rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6M14 11v6"/><path stroke-linecap="round" d="M9 7V4h6v3"/></svg>{{ isSwahili ? 'Futa Event' : 'Delete Event' }}</span></button>
               </div>
             </div>
-            <p class="mt-1 text-sm text-green-700">{{ isSwahili ? 'Idadi ya maoni' : 'Feedback count' }}: {{ event.feedback_count || 0 }}</p>
-            <p class="mt-1 text-xs text-green-700">{{ isSwahili ? 'Tarehe ya mwisho' : 'End date' }}: {{ event.end_date || (isSwahili ? 'Hakuna mwisho' : 'No expiry') }}</p>
+            <p class="mt-1 text-sm text-slate-600">{{ isSwahili ? 'Idadi ya maoni' : 'Feedback count' }}: {{ event.feedback_count || 0 }}</p>
+            <p class="mt-1 text-xs text-slate-600">{{ isSwahili ? 'Tarehe ya mwisho' : 'End date' }}: {{ event.end_date || (isSwahili ? 'Hakuna mwisho' : 'No expiry') }}</p>
 
-            <form *ngIf="editingUserEventId === event.id" class="mt-3 grid gap-2 rounded-xl border border-green-100 bg-green-50/40 p-3" (ngSubmit)="saveUserEventEdit(event.id)">
-              <input type="text" [(ngModel)]="userEventEditForm.title" name="userEditTitle{{ event.id }}" required [placeholder]="isSwahili ? 'Jina la event' : 'Event title'" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
-              <textarea [(ngModel)]="userEventEditForm.description" name="userEditDescription{{ event.id }}" rows="2" [placeholder]="isSwahili ? 'Maelezo' : 'Description'" class="rounded-lg border border-green-200 px-3 py-2 text-sm"></textarea>
+            <form *ngIf="editingUserEventId === event.id" class="mt-3 grid gap-2 rounded-xl border border-slate-200 bg-slate-100/70 p-3" (ngSubmit)="saveUserEventEdit(event.id)">
+              <input type="text" [(ngModel)]="userEventEditForm.title" name="userEditTitle{{ event.id }}" required [placeholder]="isSwahili ? 'Jina la event' : 'Event title'" class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <textarea [(ngModel)]="userEventEditForm.description" name="userEditDescription{{ event.id }}" rows="2" [placeholder]="isSwahili ? 'Maelezo' : 'Description'" class="rounded-lg border border-slate-300 px-3 py-2 text-sm"></textarea>
               <div class="grid gap-2 sm:grid-cols-2">
-                <input type="date" [(ngModel)]="userEventEditForm.eventDate" name="userEditDate{{ event.id }}" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
-                <input type="date" [(ngModel)]="userEventEditForm.endDate" name="userEditEndDate{{ event.id }}" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+                <input type="date" [(ngModel)]="userEventEditForm.eventDate" name="userEditDate{{ event.id }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                <input type="date" [(ngModel)]="userEventEditForm.endDate" name="userEditEndDate{{ event.id }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
               </div>
               <div class="grid gap-2 sm:grid-cols-2">
-                <input type="text" [(ngModel)]="userEventEditForm.location" name="userEditLocation{{ event.id }}" [placeholder]="isSwahili ? 'Mahali' : 'Location'" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
+                <input type="text" [(ngModel)]="userEventEditForm.location" name="userEditLocation{{ event.id }}" [placeholder]="isSwahili ? 'Mahali' : 'Location'" class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
               </div>
-              <input type="file" accept="image/*" name="userEditImageFile{{ event.id }}" (change)="onUserEditImageSelected($event)" class="rounded-lg border border-green-200 px-3 py-2 text-sm" />
-              <p class="text-xs text-green-700">{{ isSwahili ? 'Pakia picha mpya kama unataka kubadilisha ya sasa.' : 'Upload new image if you want to replace the current one.' }}</p>
+              <input type="file" accept="image/*" name="userEditImageFile{{ event.id }}" (change)="onUserEditImageSelected($event)" class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <p class="text-xs text-slate-600">{{ isSwahili ? 'Pakia picha mpya kama unataka kubadilisha ya sasa.' : 'Upload new image if you want to replace the current one.' }}</p>
               <div class="flex gap-2">
-                <button type="submit" class="rounded-lg bg-primary-300 px-3 py-1.5 text-xs font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M5 4h12l2 2v14H5z"/><path stroke-linecap="round" d="M8 4v6h8"/></svg>{{ isSwahili ? 'Hifadhi' : 'Save' }}</span></button>
-                <button type="button" (click)="cancelUserEventEdit()" class="rounded-lg border border-green-300 px-3 py-1.5 text-xs font-semibold text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>{{ isSwahili ? 'Ghairi' : 'Cancel' }}</span></button>
+                <button type="submit" class="rounded-lg bg-sky-200 px-3 py-1.5 text-xs font-semibold text-slate-900 hover:bg-sky-300"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M5 4h12l2 2v14H5z"/><path stroke-linecap="round" d="M8 4v6h8"/></svg>{{ isSwahili ? 'Hifadhi' : 'Save' }}</span></button>
+                <button type="button" (click)="cancelUserEventEdit()" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"><span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>{{ isSwahili ? 'Ghairi' : 'Cancel' }}</span></button>
               </div>
             </form>
 
-            <div *ngIf="selectedEventId === event.id" class="mt-3 rounded-2xl border border-green-100 bg-green-50 p-4">
+            <div *ngIf="selectedEventId === event.id" class="mt-3 rounded-2xl border border-slate-200 bg-slate-100 p-4">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <p class="font-semibold text-green-900">{{ selectedEventTitle }} - {{ isSwahili ? 'Maoni' : 'Feedback' }} ({{ selectedEventFeedbackCount }})</p>
+                <p class="font-semibold text-slate-900">{{ selectedEventTitle }} - {{ isSwahili ? 'Maoni' : 'Feedback' }} ({{ selectedEventFeedbackCount }})</p>
                 <button
                   *ngIf="selectedEventFeedback.length"
                   (click)="exportSelectedEventFeedbackCsv()"
-                  class="rounded-xl bg-green-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-900"
+                  class="rounded-xl bg-sky-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
                 >
                   <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Hamisha Excel (CSV)' : 'Export Excel (CSV)' }}</span>
                 </button>
               </div>
               <div class="mt-3 space-y-2">
-                <div *ngFor="let fb of selectedEventFeedback" class="rounded-xl border border-green-100 bg-white p-3 text-sm text-green-800">
-                  <p class="font-semibold text-green-900">{{ fb.rating }}/5 - {{ fb.satisfaction }}</p>
+                <div *ngFor="let fb of selectedEventFeedback" class="rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-700">
+                  <p class="font-semibold text-slate-900">{{ fb.rating }}/5 - {{ fb.satisfaction }}</p>
                   <p class="mt-1">{{ fb.comment }}</p>
-                  <p class="mt-1 text-xs text-green-700">
+                  <p class="mt-1 text-xs text-slate-600">
                     {{ fb.name || (isSwahili ? 'Bila jina' : 'Anonymous') }}
                     <span *ngIf="fb.email">• {{ fb.email }}</span>
                   </p>
                   <div *ngIf="fb.custom_answers | keyvalue as answers" class="mt-2 space-y-1">
-                    <div *ngFor="let answer of answers" class="rounded-lg bg-green-50 px-2.5 py-1.5 text-xs text-green-800">
+                    <div *ngFor="let answer of answers" class="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs text-slate-700">
                       <span class="font-semibold">{{ answer.key }}:</span> {{ formatAnswer(answer.value) }}
                     </div>
                   </div>
@@ -290,39 +287,39 @@
               </div>
             </div>
           </article>
-          <p *ngIf="!events.length" class="text-sm text-green-700">{{ isSwahili ? 'Hakuna matukio bado.' : 'No events yet.' }}</p>
+          <p *ngIf="!events.length" class="text-sm text-slate-600">{{ isSwahili ? 'Hakuna matukio bado.' : 'No events yet.' }}</p>
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'feedback-history'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'feedback-history'" class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Historia ya Maoni' : 'Feedback History' }}</h2>
-          <button (click)="exportFeedbackCsv()" class="rounded-xl bg-green-800 px-4 py-2 text-sm font-semibold text-white">
+          <h2 class="text-xl font-semibold text-slate-900">{{ isSwahili ? 'Historia ya Maoni' : 'Feedback History' }}</h2>
+          <button (click)="exportFeedbackCsv()" class="rounded-xl bg-sky-800 px-4 py-2 text-sm font-semibold text-white">
             <span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 3v12m0 0 4-4m-4 4-4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Hamisha Excel (CSV)' : 'Export Excel (CSV)' }}</span>
           </button>
         </div>
         <div class="space-y-2">
           <div *ngFor="let row of feedbackHistory" class="space-y-2">
             <div
-              class="cursor-pointer rounded-xl border border-green-100 p-3 text-sm text-green-800 transition hover:bg-green-50"
+              class="cursor-pointer rounded-xl border border-slate-200 p-3 text-sm text-slate-700 transition hover:bg-slate-100"
               (click)="viewFeedbackHistoryDetail(row)"
             >
               <span class="font-medium">{{ row.event_title }}</span> ({{ row.event_code }}) - {{ row.rating }}/5 - {{ row.comment }}
             </div>
 
-            <div *ngIf="selectedFeedbackHistoryItem?.id === row.id" class="rounded-2xl border border-green-200 bg-green-50 p-4">
+            <div *ngIf="selectedFeedbackHistoryItem?.id === row.id" class="rounded-2xl border border-slate-300 bg-slate-100 p-4">
               <div class="mb-2 flex items-center justify-between gap-2">
-                <h3 class="text-base font-semibold text-green-900">{{ isSwahili ? 'Maelezo ya Maoni' : 'Feedback Detail' }}</h3>
+                <h3 class="text-base font-semibold text-slate-900">{{ isSwahili ? 'Maelezo ya Maoni' : 'Feedback Detail' }}</h3>
                 <button
                   type="button"
                   (click)="closeFeedbackHistoryDetail(); $event.stopPropagation()"
-                  class="rounded-lg border border-green-300 px-3 py-1 text-xs font-semibold text-green-800 hover:bg-white"
+                  class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-white"
                 >
                   <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>{{ isSwahili ? 'Funga' : 'Close' }}</span>
                 </button>
               </div>
 
-              <div class="space-y-1 text-sm text-green-900">
+              <div class="space-y-1 text-sm text-slate-900">
                 <p><span class="font-semibold">{{ isSwahili ? 'Tukio' : 'Event' }}:</span> {{ row.event_title }} ({{ row.event_code }})</p>
                 <p><span class="font-semibold">{{ isSwahili ? 'Ukadiriaji' : 'Rating' }}:</span> {{ row.rating }}/5</p>
                 <p><span class="font-semibold">{{ isSwahili ? 'Kuridhika' : 'Satisfaction' }}:</span> {{ row.satisfaction }}</p>
@@ -333,27 +330,27 @@
               </div>
 
               <div *ngIf="row.custom_answers | keyvalue as answers" class="mt-3 space-y-1">
-                <div *ngFor="let answer of answers" class="rounded-lg bg-white px-2.5 py-1.5 text-xs text-green-800">
+                <div *ngFor="let answer of answers" class="rounded-lg bg-white px-2.5 py-1.5 text-xs text-slate-700">
                   <span class="font-semibold">{{ answer.key }}:</span> {{ formatAnswer(answer.value) }}
                 </div>
               </div>
             </div>
           </div>
-          <p *ngIf="!feedbackHistory.length" class="text-sm text-green-700">{{ isSwahili ? 'Bado hakuna historia ya maoni.' : 'No feedback history yet.' }}</p>
+          <p *ngIf="!feedbackHistory.length" class="text-sm text-slate-600">{{ isSwahili ? 'Bado hakuna historia ya maoni.' : 'No feedback history yet.' }}</p>
         </div>
       </section>
 
-      <!-- <section *ngIf="activeSection === 'payments'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
-        <h2 class="text-xl font-semibold text-green-900">Payments</h2>
+      <!-- <section *ngIf="activeSection === 'payments'" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+        <h2 class="text-xl font-semibold text-slate-900">Payments</h2>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          <div class="rounded-2xl border border-green-100 p-4">
-            <p class="font-medium text-green-900">Subscription</p>
-            <select [(ngModel)]="subscriptionPlan" name="subscriptionPlan" class="mt-2 w-full rounded-xl border border-green-200 px-4 py-3">
+          <div class="rounded-2xl border border-slate-200 p-4">
+            <p class="font-medium text-slate-900">Subscription</p>
+            <select [(ngModel)]="subscriptionPlan" name="subscriptionPlan" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3">
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
             </select>
-            <p class="mt-2 text-sm text-green-700">
+            <p class="mt-2 text-sm text-slate-600">
               Price: <span class="font-semibold">{{ currency }} {{ selectedSubscriptionPrice | number }}</span>
             </p>
             <div class="mt-3 flex flex-wrap items-center gap-1">
@@ -361,15 +358,15 @@
               <img src="assets/payment-logos/airtel-money.svg" alt="Airtel Money" class="h-5 w-auto rounded" />
               <img src="assets/payment-logos/tigo-pesa.svg" alt="Tigo Pesa" class="h-5 w-auto rounded" />
               <img src="assets/payment-logos/halopesa.svg" alt="HaloPesa" class="h-5 w-auto rounded" />
-              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">SelcomPay</span>
-              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">VISA</span>
+              <span class="rounded bg-sky-100 px-2 py-0.5 text-xs font-semibold text-slate-900">SelcomPay</span>
+              <span class="rounded bg-sky-100 px-2 py-0.5 text-xs font-semibold text-slate-900">VISA</span>
             </div>
-            <button (click)="proceedSubscriptionPayment()" class="mt-3 rounded-xl bg-green-800 px-4 py-2 text-white"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg>Proceed to Payment API</span></button>
+            <button (click)="proceedSubscriptionPayment()" class="mt-3 rounded-xl bg-sky-800 px-4 py-2 text-white"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg>Proceed to Payment API</span></button>
           </div>
-          <div class="rounded-2xl border border-green-100 p-4">
-            <p class="font-medium text-green-900">Donation</p>
-            <input type="number" min="1" [(ngModel)]="donationAmount" name="donationAmount" class="mt-2 w-full rounded-xl border border-green-200 px-4 py-3" />
-            <p class="mt-2 text-sm text-green-700">
+          <div class="rounded-2xl border border-slate-200 p-4">
+            <p class="font-medium text-slate-900">Donation</p>
+            <input type="number" min="1" [(ngModel)]="donationAmount" name="donationAmount" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3" />
+            <p class="mt-2 text-sm text-slate-600">
               Amount: <span class="font-semibold">{{ currency }} {{ donationAmount | number }}</span>
             </p>
             <div class="mt-3 flex flex-wrap items-center gap-1">
@@ -377,17 +374,17 @@
               <img src="assets/payment-logos/airtel-money.svg" alt="Airtel Money" class="h-5 w-auto rounded" />
               <img src="assets/payment-logos/tigo-pesa.svg" alt="Tigo Pesa" class="h-5 w-auto rounded" />
               <img src="assets/payment-logos/halopesa.svg" alt="HaloPesa" class="h-5 w-auto rounded" />
-              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">SelcomPay</span>
-              <span class="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-900">VISA</span>
+              <span class="rounded bg-sky-100 px-2 py-0.5 text-xs font-semibold text-slate-900">SelcomPay</span>
+              <span class="rounded bg-sky-100 px-2 py-0.5 text-xs font-semibold text-slate-900">VISA</span>
             </div>
-            <button (click)="proceedDonationPayment()" class="mt-3 rounded-xl bg-green-700 px-4 py-2 text-white"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg>Proceed to Payment API</span></button>
+            <button (click)="proceedDonationPayment()" class="mt-3 rounded-xl bg-sky-700 px-4 py-2 text-white"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path stroke-linecap="round" d="M3 10h18"/></svg>Proceed to Payment API</span></button>
           </div>
         </div>
       </section> -->
 
-      <!-- <section *ngIf="activeSection === 'payments-history'" class="rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <!-- <section *ngIf="activeSection === 'payments-history'" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 class="text-xl font-semibold text-green-900">Payment History</h2>
+          <h2 class="text-xl font-semibold text-slate-900">Payment History</h2>
           <button
             *ngIf="payments.length"
             (click)="clearAllPaymentHistory()"
@@ -397,7 +394,7 @@
           </button>
         </div>
         <div class="mt-4 space-y-2">
-          <div *ngFor="let payment of payments" class="flex items-center justify-between gap-3 rounded-xl border border-green-100 p-3 text-sm text-green-800">
+          <div *ngFor="let payment of payments" class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-3 text-sm text-slate-700">
             <span>{{ payment.payment_type }} - {{ payment.amount }} ({{ payment.status }})</span>
             <button
               (click)="deletePaymentHistoryItem(payment.id)"
@@ -406,20 +403,20 @@
               <span class="inline-flex items-center gap-1"><svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 7h16M10 11v6M14 11v6"/></svg>Delete</span>
             </button>
           </div>
-          <p *ngIf="!payments.length" class="text-sm text-green-700">No payments yet.</p>
+          <p *ngIf="!payments.length" class="text-sm text-slate-600">No payments yet.</p>
         </div>
       </section> -->
 
-      <section *ngIf="activeSection === 'materials'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
+      <section *ngIf="activeSection === 'materials'" class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Vifaa vya Event' : 'Event Materials' }}</h2>
-            <p class="text-sm text-green-700">{{ isSwahili ? 'Tafuta event, pakia PPT/PDF/video/audio, kisha kagua orodha ya uploads.' : 'Search events, upload PPT/PDF/video/audio assets, and review the list of uploads.' }}</p>
+            <h2 class="text-xl font-semibold text-slate-900">{{ isSwahili ? 'Vifaa vya Event' : 'Event Materials' }}</h2>
+            <p class="text-sm text-slate-600">{{ isSwahili ? 'Tafuta event, pakia PPT/PDF/video/audio, kisha kagua orodha ya uploads.' : 'Search events, upload PPT/PDF/video/audio assets, and review the list of uploads.' }}</p>
           </div>
           <button
             type="button"
             (click)="setActiveSection('overview')"
-            class="rounded-xl border border-green-300 px-4 py-2 text-sm font-semibold text-primary-600 hover:bg-primary-50"
+            class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
           >
             {{ isSwahili ? 'Rudi Dashboard' : 'Back to Dashboard' }}
           </button>
@@ -427,84 +424,84 @@
 
         <div class="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
           <div class="space-y-4">
-            <label class="text-xs font-semibold uppercase text-green-600">{{ isSwahili ? 'Tafuta event kwa jina au code' : 'Search event by name or code' }}</label>
+            <label class="text-xs font-semibold uppercase text-slate-500">{{ isSwahili ? 'Tafuta event kwa jina au code' : 'Search event by name or code' }}</label>
             <div class="flex items-center gap-2">
               <input
                 type="text"
                 [(ngModel)]="materialsSearchTerm"
-                class="flex-1 rounded-xl border border-green-200 px-4 py-2 text-sm"
+                class="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm"
                 [placeholder]="isSwahili ? 'Tafuta kwa jina au code' : 'Search by name or code'"
               />
               <button
                 *ngIf="materialsSearchTerm"
                 type="button"
                 (click)="materialsSearchTerm = ''"
-                class="rounded-xl border border-green-200 px-4 py-2 text-xs text-green-800"
+                class="rounded-xl border border-slate-300 px-4 py-2 text-xs text-slate-700"
               >
                 {{ isSwahili ? 'Futa' : 'Clear' }}
               </button>
             </div>
             <div class="space-y-3 max-h-64 overflow-y-auto">
-              <article *ngFor="let event of filteredMaterialsEvents" class="rounded-2xl border border-green-100 bg-green-50/60 p-4 shadow-sm">
+              <article *ngFor="let event of filteredMaterialsEvents" class="rounded-2xl border border-slate-200 bg-slate-100/80 p-4 shadow-sm">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="font-semibold text-green-900">{{ event.title }}</p>
-                    <p class="text-xs text-green-600 uppercase">{{ event.event_code }}</p>
+                    <p class="font-semibold text-slate-900">{{ event.title }}</p>
+                    <p class="text-xs text-slate-500 uppercase">{{ event.event_code }}</p>
                   </div>
-                  <button type="button" class="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-700" (click)="selectMaterialEvent(event)">{{ isSwahili ? 'Chagua' : 'Select' }}</button>
+                  <button type="button" class="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700" (click)="selectMaterialEvent(event)">{{ isSwahili ? 'Chagua' : 'Select' }}</button>
                 </div>
               </article>
-              <p *ngIf="!filteredMaterialsEvents.length" class="text-sm text-green-700">{{ isSwahili ? 'Hakuna event inayolingana na utafutaji huu.' : 'No events match this search.' }}</p>
+              <p *ngIf="!filteredMaterialsEvents.length" class="text-sm text-slate-600">{{ isSwahili ? 'Hakuna event inayolingana na utafutaji huu.' : 'No events match this search.' }}</p>
             </div>
           </div>
           <div class="space-y-4">
-            <div *ngIf="!selectedMaterialEvent" class="rounded-2xl border border-dashed border-green-200 bg-white px-6 py-10 text-center text-sm text-green-700">
+            <div *ngIf="!selectedMaterialEvent" class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center text-sm text-slate-600">
               {{ isSwahili ? 'Chagua event ili kupakia au kuona materials.' : 'Pick an event to upload or view materials.' }}
             </div>
-            <div *ngIf="selectedMaterialEvent" class="space-y-4 rounded-2xl border border-green-100 bg-white p-4 shadow-sm">
+            <div *ngIf="selectedMaterialEvent" class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div class="flex flex-wrap items-baseline justify-between gap-3">
                 <div>
-                  <p class="text-xs uppercase text-green-600">{{ isSwahili ? 'Event iliyochaguliwa' : 'Selected event' }}</p>
-                  <p class="text-lg font-semibold text-green-900">{{ selectedMaterialEvent.title }}</p>
-                  <p class="text-xs text-green-600 uppercase">{{ selectedMaterialEvent.event_code }}</p>
+                  <p class="text-xs uppercase text-slate-500">{{ isSwahili ? 'Event iliyochaguliwa' : 'Selected event' }}</p>
+                  <p class="text-lg font-semibold text-slate-900">{{ selectedMaterialEvent.title }}</p>
+                  <p class="text-xs text-slate-500 uppercase">{{ selectedMaterialEvent.event_code }}</p>
                 </div>
-                <button type="button" class="text-xs font-semibold text-primary-700" (click)="resetMaterialsSection()">{{ isSwahili ? 'Badilisha event' : 'Change event' }}</button>
+                <button type="button" class="text-xs font-semibold text-sky-700" (click)="resetMaterialsSection()">{{ isSwahili ? 'Badilisha event' : 'Change event' }}</button>
               </div>
               <form class="space-y-3" (ngSubmit)="uploadSelectedEventMaterial($event)">
-                <input type="file" (change)="onMaterialFileSelected($event)" accept=".pdf,.ppt,.pptx,.mp4,.mp3,.doc,.docx" class="w-full text-xs text-green-700" />
-                <select [(ngModel)]="selectedMaterialCategory" name="materialCategory" class="w-full rounded-xl border border-green-200 px-4 py-2 text-sm">
+                <input type="file" (change)="onMaterialFileSelected($event)" accept=".pdf,.ppt,.pptx,.mp4,.mp3,.doc,.docx" class="w-full text-xs text-slate-600" />
+                <select [(ngModel)]="selectedMaterialCategory" name="materialCategory" class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm">
                   <option value="presentation">{{ isSwahili ? 'Uwasilishaji' : 'Presentation' }}</option>
                   <option value="video">{{ isSwahili ? 'Video' : 'Video' }}</option>
                   <option value="audio">{{ isSwahili ? 'Sauti' : 'Audio' }}</option>
                   <option value="document">{{ isSwahili ? 'Nyaraka' : 'Document' }}</option>
                   <option value="other">{{ isSwahili ? 'Nyingine' : 'Other' }}</option>
                 </select>
-                <button type="submit" class="w-full rounded-xl bg-primary-300 px-4 py-2 text-sm font-semibold text-green-900 disabled:cursor-not-allowed disabled:opacity-60" [disabled]="!selectedMaterialFile || isUploadingMaterial">
+                <button type="submit" class="w-full rounded-xl bg-sky-200 px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60" [disabled]="!selectedMaterialFile || isUploadingMaterial">
                   {{ isUploadingMaterial ? (isSwahili ? 'Inapakia...' : 'Uploading...') : (isSwahili ? 'Pakia material' : 'Upload material') }}
                 </button>
               </form>
-              <p *ngIf="materialsMessage" class="text-xs text-green-700">{{ materialsMessage }}</p>
+              <p *ngIf="materialsMessage" class="text-xs text-slate-600">{{ materialsMessage }}</p>
               <div class="space-y-3">
-                <div *ngIf="materialsLoading" class="text-sm text-green-700">{{ isSwahili ? 'Inasoma materials...' : 'Loading materials...' }}</div>
+                <div *ngIf="materialsLoading" class="text-sm text-slate-600">{{ isSwahili ? 'Inasoma materials...' : 'Loading materials...' }}</div>
                 <div *ngIf="eventMaterials.length" class="space-y-2 max-h-48 overflow-y-auto">
-                  <article *ngFor="let material of eventMaterials" class="flex flex-col gap-2 rounded-xl border border-green-100 bg-green-50/40 px-3 py-2 text-xs text-green-800">
+                  <article *ngFor="let material of eventMaterials" class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-100/70 px-3 py-2 text-xs text-slate-700">
                     <div class="flex flex-col gap-1">
-                      <p class="font-semibold text-green-900">{{ material.original_name }}</p>
-                      <p class="text-[11px] uppercase text-green-600">{{ material.category | titlecase }} · {{ material.mime_type }}</p>
+                      <p class="font-semibold text-slate-900">{{ material.original_name }}</p>
+                      <p class="text-[11px] uppercase text-slate-500">{{ material.category | titlecase }} · {{ material.mime_type }}</p>
                       <ng-container *ngIf="editingMaterialId === material.id">
-                        <div class="space-y-2 border-t border-green-100 pt-2 text-[11px]">
+                        <div class="space-y-2 border-t border-slate-200 pt-2 text-[11px]">
                           <input
                             [(ngModel)]="materialEditForm.originalName"
                             name="editMaterialName{{ material.id }}"
                             [ngModelOptions]="{ standalone: true }"
-                            class="w-full rounded-xl border border-green-200 px-3 py-2 text-[11px]"
+                            class="w-full rounded-xl border border-slate-300 px-3 py-2 text-[11px]"
                             [placeholder]="isSwahili ? 'Jina la material' : 'Material name'"
                           />
                           <select
                             [(ngModel)]="materialEditForm.category"
                             name="editMaterialCategory{{ material.id }}"
                             [ngModelOptions]="{ standalone: true }"
-                            class="w-full rounded-xl border border-green-200 px-3 py-2 text-[11px]"
+                            class="w-full rounded-xl border border-slate-300 px-3 py-2 text-[11px]"
                           >
                             <option value="presentation">{{ isSwahili ? 'Uwasilishaji' : 'Presentation' }}</option>
                             <option value="video">{{ isSwahili ? 'Video' : 'Video' }}</option>
@@ -513,99 +510,132 @@
                             <option value="other">{{ isSwahili ? 'Nyingine' : 'Other' }}</option>
                           </select>
                           <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" class="rounded-full bg-primary-200 px-3 py-1 text-[11px] font-semibold text-green-900" (click)="saveMaterialEdit(material)">{{ isSwahili ? 'Hifadhi' : 'Save' }}</button>
+                            <button type="button" class="rounded-full bg-sky-100 px-3 py-1 text-[11px] font-semibold text-slate-900" (click)="saveMaterialEdit(material)">{{ isSwahili ? 'Hifadhi' : 'Save' }}</button>
                             <button type="button" class="rounded-full border border-red-200 px-3 py-1 text-[11px] font-semibold text-red-700" (click)="cancelMaterialEdit()">{{ isSwahili ? 'Ghairi' : 'Cancel' }}</button>
                           </div>
                         </div>
                       </ng-container>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                      <button type="button" class="rounded-full border border-green-200 px-3 py-1 text-[11px] font-semibold" (click)="downloadMaterial(material)">{{ isSwahili ? 'Pakua' : 'Download' }}</button>
-                      <button type="button" class="rounded-full border border-primary-200 px-3 py-1 text-[11px] font-semibold text-primary-700" (click)="startEditingMaterial(material)">{{ isSwahili ? 'Hariri' : 'Edit' }}</button>
+                      <button type="button" class="rounded-full border border-slate-300 px-3 py-1 text-[11px] font-semibold" (click)="downloadMaterial(material)">{{ isSwahili ? 'Pakua' : 'Download' }}</button>
+                      <button type="button" class="rounded-full border border-sky-200 px-3 py-1 text-[11px] font-semibold text-sky-700" (click)="startEditingMaterial(material)">{{ isSwahili ? 'Hariri' : 'Edit' }}</button>
                       <button type="button" class="rounded-full border border-red-200 px-3 py-1 text-[11px] font-semibold text-red-700" (click)="deleteMaterial(material)">{{ isSwahili ? 'Futa' : 'Delete' }}</button>
                     </div>
                   </article>
                 </div>
-                <p *ngIf="!eventMaterials.length && !materialsLoading" class="text-xs text-green-600">{{ isSwahili ? 'Bado hakuna materials zilizopakiwa.' : 'No materials uploaded yet.' }}</p>
+                <p *ngIf="!eventMaterials.length && !materialsLoading" class="text-xs text-slate-500">{{ isSwahili ? 'Bado hakuna materials zilizopakiwa.' : 'No materials uploaded yet.' }}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section *ngIf="activeSection === 'profile'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
-        <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Mipangilio ya Profile' : 'Profile Settings' }}</h2>
-        <form class="mt-4 grid gap-3" (ngSubmit)="updateProfile()">
-          <input type="text" [(ngModel)]="profileForm.name" name="profileName" [placeholder]="isSwahili ? 'Jina kamili' : 'Full name'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-          <input type="text" [(ngModel)]="profileForm.organization" name="profileOrg" [placeholder]="isSwahili ? 'Shirika' : 'Organization'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-          <input type="url" [(ngModel)]="profileForm.profileImageUrl" name="profileImageUrl" [placeholder]="isSwahili ? 'URL ya picha ya profile' : 'Profile image URL'" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-          <button type="submit" class="w-fit rounded-xl bg-primary-300 px-5 py-3 font-semibold text-green-900 hover:bg-primary-400"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>{{ isSwahili ? 'Sasisha Profile' : 'Update Profile' }}</span></button>
-        </form>
-
-        <div class="mt-4 border-t border-green-100 pt-4">
-          <input type="file" accept="image/*" (change)="onProfileImageSelected($event)" class="w-full rounded-xl border border-green-200 px-4 py-3" />
-          <p class="mt-2 text-xs text-green-700">{{ isSwahili ? 'Picha ya profile: JPG, PNG, WEBP. Max ' + profileImageMaxMb + 'MB.' : 'Profile image: JPG, PNG, WEBP. Max ' + profileImageMaxMb + 'MB.' }}</p>
-          <button (click)="uploadProfileImage()" class="mt-3 rounded-xl border border-green-300 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 16V4m0 0 4 4m-4-4-4 4"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Pakia Picha ya Profile' : 'Upload Profile Picture' }}</span></button>
+      <section *ngIf="activeSection === 'security'" class="glass-panel rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-semibold text-slate-900">{{ isSwahili ? 'Usalama wa Akaunti' : 'Account Security' }}</h2>
+          <div class="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm">
+            <button
+              type="button"
+              (click)="setSecurityTab('profile')"
+              class="rounded-lg px-3 py-1.5 font-medium text-slate-700 transition"
+              [class.bg-white]="securityTab === 'profile'"
+              [class.text-sky-700]="securityTab === 'profile'"
+            >
+              {{ isSwahili ? 'Profile' : 'Profile' }}
+            </button>
+            <button
+              type="button"
+              (click)="setSecurityTab('password')"
+              class="rounded-lg px-3 py-1.5 font-medium text-slate-700 transition"
+              [class.bg-white]="securityTab === 'password'"
+              [class.text-sky-700]="securityTab === 'password'"
+            >
+              {{ isSwahili ? 'Badili Password' : 'Change Password' }}
+            </button>
+          </div>
         </div>
-      </section>
 
-      <section *ngIf="activeSection === 'security'" class="glass-panel rounded-3xl border border-green-100 bg-white p-6 shadow-soft">
-        <h2 class="text-xl font-semibold text-green-900">{{ isSwahili ? 'Usalama' : 'Security' }}</h2>
-        <form class="mt-4 grid gap-3" (ngSubmit)="changePassword()">
-          <div class="relative">
-            <input [type]="showOldPassword ? 'text' : 'password'" [(ngModel)]="passwordForm.oldPassword" name="oldPassword" [placeholder]="isSwahili ? 'Password ya zamani' : 'Old password'" class="w-full rounded-xl border border-green-200 px-4 py-3 pr-12" />
-            <button
-              type="button"
-              (click)="togglePasswordVisibility('old')"
-              class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-green-700 hover:bg-green-50"
-              [attr.aria-label]="showOldPassword ? 'Hide password' : 'Show password'"
-            >
-              <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
-                <circle cx="12" cy="12" r="3"/>
-                <path *ngIf="showOldPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
-              </svg>
-            </button>
+        <div *ngIf="securityTab === 'profile'" class="mt-4">
+          <h3 class="text-lg font-semibold text-slate-900">{{ isSwahili ? 'Mipangilio ya Profile' : 'Profile Settings' }}</h3>
+          <p class="mt-1 text-sm text-slate-600">
+            {{ isSwahili ? 'Sasisha jina, shirika na picha ya profile hapa.' : 'Update your name, organization, and profile image here.' }}
+          </p>
+          <p *ngIf="message" class="mt-2 text-sm text-slate-600">{{ message }}</p>
+          <form class="mt-4 grid gap-3" (ngSubmit)="updateProfile()">
+            <input type="text" [(ngModel)]="profileForm.name" name="profileName" [placeholder]="isSwahili ? 'Jina kamili' : 'Full name'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+            <input type="text" [(ngModel)]="profileForm.organization" name="profileOrg" [placeholder]="isSwahili ? 'Shirika' : 'Organization'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+            <input type="url" [(ngModel)]="profileForm.profileImageUrl" name="profileImageUrl" [placeholder]="isSwahili ? 'URL ya picha ya profile' : 'Profile image URL'" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+            <button type="submit" class="w-fit rounded-xl bg-sky-200 px-5 py-3 font-semibold text-slate-900 hover:bg-sky-300"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4Z"/></svg>{{ isSwahili ? 'Sasisha Profile' : 'Update Profile' }}</span></button>
+          </form>
+
+          <div class="mt-4 border-t border-slate-200 pt-4">
+            <input type="file" accept="image/*" (change)="onProfileImageSelected($event)" class="w-full rounded-xl border border-slate-300 px-4 py-3" />
+            <p class="mt-2 text-xs text-slate-600">{{ isSwahili ? 'Picha ya profile: JPG, PNG, WEBP. Max ' + profileImageMaxMb + 'MB.' : 'Profile image: JPG, PNG, WEBP. Max ' + profileImageMaxMb + 'MB.' }}</p>
+            <button (click)="uploadProfileImage()" class="mt-3 rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M12 16V4m0 0 4 4m-4-4-4 4"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg>{{ isSwahili ? 'Pakia Picha ya Profile' : 'Upload Profile Picture' }}</span></button>
           </div>
-          <div class="relative">
-            <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="passwordForm.newPassword" name="newPassword" [placeholder]="isSwahili ? 'Password mpya' : 'New password'" class="w-full rounded-xl border border-green-200 px-4 py-3 pr-12" />
-            <button
-              type="button"
-              (click)="togglePasswordVisibility('new')"
-              class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-green-700 hover:bg-green-50"
-              [attr.aria-label]="showNewPassword ? 'Hide password' : 'Show password'"
-            >
-              <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
-                <circle cx="12" cy="12" r="3"/>
-                <path *ngIf="showNewPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
-              </svg>
-            </button>
-          </div>
-          <div class="relative">
-            <input [type]="showConfirmNewPassword ? 'text' : 'password'" [(ngModel)]="passwordForm.confirmNewPassword" name="confirmNewPassword" [placeholder]="isSwahili ? 'Thibitisha password mpya' : 'Confirm new password'" class="w-full rounded-xl border border-green-200 px-4 py-3 pr-12" />
-            <button
-              type="button"
-              (click)="togglePasswordVisibility('confirm')"
-              class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-green-700 hover:bg-green-50"
-              [attr.aria-label]="showConfirmNewPassword ? 'Hide password' : 'Show password'"
-            >
-              <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
-                <circle cx="12" cy="12" r="3"/>
-                <path *ngIf="showConfirmNewPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
-              </svg>
-            </button>
-          </div>
-          <button type="submit" class="w-fit rounded-xl border border-green-300 px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-50"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>{{ isSwahili ? 'Badili Password' : 'Change Password' }}</span></button>
-        </form>
+        </div>
+
+        <div *ngIf="securityTab === 'password'" class="mt-4">
+          <h3 class="text-lg font-semibold text-slate-900">{{ isSwahili ? 'Badili Password' : 'Change Password' }}</h3>
+          <p class="mt-1 text-sm text-slate-600">
+            {{ isSwahili ? 'Badili password ya akaunti yako hapa.' : 'Change your account password here.' }}
+          </p>
+          <form class="mt-4 grid gap-3" (ngSubmit)="changePassword()">
+            <div class="relative">
+              <input [type]="showOldPassword ? 'text' : 'password'" [(ngModel)]="passwordForm.oldPassword" name="oldPassword" [placeholder]="isSwahili ? 'Password ya zamani' : 'Old password'" class="w-full rounded-xl border border-slate-300 px-4 py-3 pr-12" />
+              <button
+                type="button"
+                (click)="togglePasswordVisibility('old')"
+                class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+                [attr.aria-label]="showOldPassword ? 'Hide password' : 'Show password'"
+              >
+                <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <path *ngIf="showOldPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="relative">
+              <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="passwordForm.newPassword" name="newPassword" [placeholder]="isSwahili ? 'Password mpya' : 'New password'" class="w-full rounded-xl border border-slate-300 px-4 py-3 pr-12" />
+              <button
+                type="button"
+                (click)="togglePasswordVisibility('new')"
+                class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+                [attr.aria-label]="showNewPassword ? 'Hide password' : 'Show password'"
+              >
+                <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <path *ngIf="showNewPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="relative">
+              <input [type]="showConfirmNewPassword ? 'text' : 'password'" [(ngModel)]="passwordForm.confirmNewPassword" name="confirmNewPassword" [placeholder]="isSwahili ? 'Thibitisha password mpya' : 'Confirm new password'" class="w-full rounded-xl border border-slate-300 px-4 py-3 pr-12" />
+              <button
+                type="button"
+                (click)="togglePasswordVisibility('confirm')"
+                class="absolute inset-y-0 right-2 my-auto h-fit rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+                [attr.aria-label]="showConfirmNewPassword ? 'Hide password' : 'Show password'"
+              >
+                <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <path *ngIf="showConfirmNewPassword" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+                </svg>
+              </button>
+            </div>
+            <button type="submit" class="w-fit rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"><span class="inline-flex items-center gap-2"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path stroke-linecap="round" d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>{{ isSwahili ? 'Badili Password' : 'Change Password' }}</span></button>
+          </form>
+        </div>
       </section>
 
     </main>
   </div>
 
-  <footer class="glass-panel glass-footer mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-green-100 px-5 py-4">
-    <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-green-800">
+  <footer class="glass-panel glass-footer mx-auto mt-6 w-full max-w-7xl rounded-3xl border border-slate-200 px-5 py-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-700">
       <p class="font-medium">{{ isSwahili ? 'Dashboard ya Mtumiaji - Feedback System' : 'Feedback System User Dashboard' }}</p>
       <p>{{ isSwahili ? 'Imejengwa kwa matukio, maoni, na malipo.' : 'Built for events, feedback, and payments.' }}</p>
     </div>
@@ -617,8 +647,8 @@
     class="liquid-confirm-overlay fixed inset-0 z-50 flex items-center justify-center px-4"
   >
     <div class="liquid-confirm-panel w-full max-w-sm rounded-2xl p-6">
-      <h3 class="text-lg font-semibold text-green-900">{{ isSwahili ? 'Thibitisha Kufuta Material' : 'Confirm Delete Material' }}</h3>
-      <p class="mt-2 text-sm text-green-700">
+      <h3 class="text-lg font-semibold text-slate-900">{{ isSwahili ? 'Thibitisha Kufuta Material' : 'Confirm Delete Material' }}</h3>
+      <p class="mt-2 text-sm text-slate-600">
         {{ isSwahili ? 'Una uhakika unataka kufuta' : 'Are you sure you want to delete' }}
         <strong>{{ pendingMaterialToDelete?.original_name }}</strong>
         {{ isSwahili ? 'kutoka' : 'from' }} {{ selectedMaterialEvent?.title }}?
@@ -628,7 +658,7 @@
         <button
           type="button"
           (click)="cancelDeleteMaterial()"
-          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-green-800"
+          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-slate-700"
         >
           {{ isSwahili ? 'Ghairi' : 'Cancel' }}
         </button>
@@ -650,8 +680,8 @@
     class="liquid-confirm-overlay fixed inset-0 z-50 flex items-center justify-center px-4"
   >
     <div class="liquid-confirm-panel w-full max-w-sm rounded-2xl p-6">
-      <h3 class="text-lg font-semibold text-green-900">{{ isSwahili ? 'Thibitisha Kufuta Event' : 'Confirm delete event' }}</h3>
-      <p class="mt-2 text-sm text-green-700">
+      <h3 class="text-lg font-semibold text-slate-900">{{ isSwahili ? 'Thibitisha Kufuta Event' : 'Confirm delete event' }}</h3>
+      <p class="mt-2 text-sm text-slate-600">
         {{ isSwahili ? 'Una uhakika unataka kufuta' : 'Are you sure you want to delete' }}
         <strong>{{ pendingEventToDelete?.title }}</strong>?
         {{ isSwahili ? 'Maoni yote yanayohusiana yataondolewa.' : 'All related feedback will be removed.' }}
@@ -660,7 +690,7 @@
         <button
           type="button"
           (click)="cancelDeleteEvent()"
-          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-green-800"
+          class="liquid-cancel rounded-full border px-4 py-2 text-sm font-semibold text-slate-700"
         >
           {{ isSwahili ? 'Ghairi' : 'Cancel' }}
         </button>

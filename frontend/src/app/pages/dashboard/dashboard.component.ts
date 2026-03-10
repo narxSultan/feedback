@@ -16,6 +16,7 @@ import { ChatbotKnowledgeEntry, EventItem, EventMaterial } from '../../core/mode
 })
 export class DashboardPageComponent {
   activeSection: 'overview' | 'feedback' | 'ads' | 'security' | 'actions' | 'materials' | 'chatbot' = 'overview';
+  securityTab: 'profile' | 'password' = 'profile';
   searchTerm = '';
   feedbacks: any[] = [];
   ads: any[] = [];
@@ -125,6 +126,9 @@ export class DashboardPageComponent {
       this.resetMaterialsSection();
     }
     this.activeSection = section;
+    if (section === 'security' && !this.securityTab) {
+      this.securityTab = 'profile';
+    }
     if (section === 'ads') {
       this.loadAds();
       return;
@@ -132,6 +136,10 @@ export class DashboardPageComponent {
     if (section === 'chatbot') {
       this.loadChatbotEntries();
     }
+  }
+
+  setSecurityTab(tab: 'profile' | 'password') {
+    this.securityTab = tab;
   }
 
   loadFeedbacks() {

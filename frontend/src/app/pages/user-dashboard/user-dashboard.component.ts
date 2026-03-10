@@ -19,12 +19,12 @@ export class UserDashboardPageComponent implements OnInit {
     | 'overview'
     | 'create-event'
     | 'payments'
-    | 'profile'
     | 'security'
     | 'events-feedback'
     | 'feedback-history'
     | 'payments-history'
     | 'materials' = 'overview';
+  securityTab: 'profile' | 'password' = 'profile';
   events: EventItem[] = [];
   payments: UserPayment[] = [];
   feedbackHistory: UserFeedbackHistoryItem[] = [];
@@ -206,6 +206,13 @@ export class UserDashboardPageComponent implements OnInit {
       this.resetMaterialsSection();
     }
     this.activeSection = section;
+    if (section === 'security' && !this.securityTab) {
+      this.securityTab = 'profile';
+    }
+  }
+
+  setSecurityTab(tab: 'profile' | 'password') {
+    this.securityTab = tab;
   }
 
   load() {
